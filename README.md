@@ -5,8 +5,9 @@ PWA móvil para guardar vehículos, seguir su mantenimiento y obtener orientaci�
 ## Incluido en esta primera versión
 
 - Garaje local con SEAT, Volkswagen, Renault, Hyundai, Ford y Opel.
-- 26 modelos comercializados en España y arquitectura para variantes técnicas verificadas.
-- Primer catálogo detallado: Hyundai i30 N Line 2018–2026, con 11 combinaciones de motor/cambio y componentes instalados.
+- 26 modelos comercializados en España, organizados por generación y año.
+- Más de 600 combinaciones de motor y cambio: gasolina, diésel, microhíbrido de 48 V, híbrido, enchufable y eléctrico.
+- Hyundai i30 completo desde 2007, con versiones convencionales, N Line y N; gasolina y microhíbrido aparecen como combustibles distintos.
 - Diagnóstico por 12 grupos de síntomas, más de 50 causas y filtrado por componentes del vehículo.
 - Plan de mantenimiento orientativo y lista de tareas.
 - Datos guardados únicamente en el dispositivo mediante `localStorage`.
@@ -26,10 +27,10 @@ La dirección resultante tendrá el formato `https://usuario.github.io/repositor
 
 Los intervalos de mantenimiento son rangos orientativos. Antes de convertirlos en instrucciones exactas se debe verificar cada combinación de generación y código de motor con documentación fiable. Los porcentajes del asistente son niveles de coincidencia, no diagnósticos confirmados.
 
-## Fuentes técnicas usadas en la ficha i30 N Line
+## Criterio del catálogo técnico
 
-- Documentación de prensa y fichas técnicas oficiales de Hyundai Motor España y Hyundai Motor Europe.
-- Catálogos oficiales i30 de 2017, 2020 y MY2025.
-- Manual del propietario oficial de Hyundai.
+- Fichas técnicas, catálogos y documentación de prensa de los fabricantes para el mercado europeo y español.
+- Las variantes se agrupan por generación comercial y se filtran por año y combustible.
+- El código de motor, cuando se conoce, prevalece sobre la denominación comercial para confirmar distribución, emisiones e intervalos exactos.
 
-El resto de modelos permanece en configuración manual hasta incorporar su ficha técnica verificada. La aplicación no presenta una configuración manual como si fuera una versión identificada.
+El catálogo permite identificar los principales sistemas instalados y descartar fallos incompatibles. No sustituye la comprobación mediante VIN, código de motor o documentación oficial del vehículo concreto.

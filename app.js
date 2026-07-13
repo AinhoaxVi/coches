@@ -20,33 +20,33 @@ const VEHICLES = {
 };
 
 const FUELS = {
-  gasoline: "Gasolina", diesel: "Diésel", hybrid: "Híbrido", phev: "Híbrido enchufable", electric: "Eléctrico"
+  gasoline: "Gasolina", diesel: "Diésel", mhev: "Microhíbrido (48 V)", hybrid: "Híbrido", phev: "Híbrido enchufable", electric: "Eléctrico"
 };
 
-// Las variantes verificadas sustituyen la configuración genérica cuando existe
-// una ficha técnica concreta. El resto de modelos sigue admitiendo alta manual.
-const VARIANTS = [
-  { id: "i30-nl-14-140-m", brand: "Hyundai", model: "i30", years: [2018, 2020], generation: "PD · N Line", engine: "1.4 T-GDi 140 CV", fuel: "gasoline", power: 140, transmission: "manual", gearbox: "6MT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "catalyst", "timingChain", "startStop"] },
-  { id: "i30-nl-14-140-d", brand: "Hyundai", model: "i30", years: [2018, 2020], generation: "PD · N Line", engine: "1.4 T-GDi 140 CV", fuel: "gasoline", power: 140, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "catalyst", "timingChain", "startStop", "dct"] },
-  { id: "i30-nl-16-136-m", brand: "Hyundai", model: "i30", years: [2018, 2020], generation: "PD · N Line", engine: "1.6 CRDi 136 CV", fuel: "diesel", power: 136, transmission: "manual", gearbox: "6MT", turbo: "yes", tech: ["commonRail", "turbo", "egr", "dpf", "scr", "adblue", "timingChain", "startStop"] },
-  { id: "i30-nl-16-136-d", brand: "Hyundai", model: "i30", years: [2018, 2020], generation: "PD · N Line", engine: "1.6 CRDi 136 CV", fuel: "diesel", power: 136, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["commonRail", "turbo", "egr", "dpf", "scr", "adblue", "timingChain", "startStop", "dct"] },
-  { id: "i30-nl-10-120-mhev-m", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.0 T-GDi 120 CV 48V", fuel: "gasoline", power: 120, transmission: "manual", gearbox: "6iMT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "gpf", "timingChain", "mhev48", "mhsg", "dcDc", "startStop"] },
-  { id: "i30-nl-10-120-mhev-d", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.0 T-GDi 120 CV 48V", fuel: "gasoline", power: 120, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "gpf", "timingChain", "mhev48", "mhsg", "dcDc", "startStop", "dct"] },
-  { id: "i30-nl-15-160-mhev-m", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.5 T-GDi 160 CV 48V", fuel: "gasoline", power: 160, transmission: "manual", gearbox: "6iMT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "gpf", "timingChain", "mhev48", "mhsg", "dcDc", "startStop"] },
-  { id: "i30-nl-15-160-mhev-d", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.5 T-GDi 160 CV 48V", fuel: "gasoline", power: 160, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "gpf", "timingChain", "mhev48", "mhsg", "dcDc", "startStop", "dct"] },
-  { id: "i30-nl-16-136-mhev-m", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.6 CRDi 136 CV 48V", fuel: "diesel", power: 136, transmission: "manual", gearbox: "6iMT", turbo: "yes", tech: ["commonRail", "turbo", "egr", "dpf", "scr", "adblue", "timingChain", "mhev48", "mhsg", "dcDc", "startStop"] },
-  { id: "i30-nl-16-136-mhev-d", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.6 CRDi 136 CV 48V", fuel: "diesel", power: 136, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["commonRail", "turbo", "egr", "dpf", "scr", "adblue", "timingChain", "mhev48", "mhsg", "dcDc", "startStop", "dct"] },
-  { id: "i30-nl-15-140-d", brand: "Hyundai", model: "i30", years: [2025, 2026], generation: "PD restyling II · N Line", engine: "1.5 T-GDi 140 CV", fuel: "gasoline", power: 140, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "gpf", "timingChain", "startStop", "dct"] }
-];
+// Años sin comercialización entre dos generaciones del mismo nombre.
+const MODEL_YEAR_GAPS = { "SEAT|Toledo": [2010, 2011] };
+
+function yearsForModel(brand, model) {
+  const [min, max] = VEHICLES[brand][model];
+  const gaps = new Set(MODEL_YEAR_GAPS[`${brand}|${model}`] || []);
+  return Array.from({ length: max - min + 1 }, (_, i) => max - i).filter(year => !gaps.has(year));
+}
+
+const VARIANTS = globalThis.VEHICLE_VARIANTS || [];
 
 const COMPONENT_LABELS = {
   directInjection: "Inyección directa de gasolina", commonRail: "Inyección diésel common-rail",
   turbo: "Turbo e intercooler", lambda: "Sondas lambda", catalyst: "Catalizador",
   gpf: "Filtro de partículas de gasolina (GPF)", egr: "Válvula EGR", dpf: "Filtro de partículas diésel (DPF)",
   scr: "Catalizador SCR", adblue: "Sistema AdBlue", timingChain: "Distribución por cadena",
-  startStop: "Start/Stop", dct: "Cambio de doble embrague 7DCT", mhev48: "Batería híbrida de 48 V",
-  mhsg: "Motor-generador MHSG", dcDc: "Convertidor DC/DC", abs: "ABS y control de estabilidad",
-  eps: "Dirección asistida eléctrica", ac: "Climatización", tpms: "Control de presión de neumáticos"
+  startStop: "Start/Stop", dct: "Cambio automático de doble embrague", mhev48: "Batería híbrida de 48 V",
+  mhsg: "Motor-generador MHSG", dcDc: "Convertidor DC/DC", abs: "Sistema antibloqueo de frenos (ABS)",
+  esc: "Control electrónico de estabilidad (ESP/ESC)", eps: "Dirección asistida eléctrica",
+  ac: "Climatización", tpms: "Control de presión de neumáticos",
+  portInjection: "Inyección indirecta / multipunto", hybridSystem: "Sistema híbrido de tracción",
+  plugIn: "Carga externa y sistema híbrido enchufable", tractionBattery: "Batería de tracción",
+  electricDrive: "Motor e inversor eléctricos", cvt: "Transmisión CVT / multimodo",
+  automaticGearbox: "Caja de cambios automática", lpg: "Sistema bifuel GLP"
 };
 
 const SYMPTOMS = [
@@ -336,17 +336,30 @@ function vehicleDetails(v) {
   return `${v.year} · ${FUELS[v.fuel]} · ${v.power || "—"} CV · ${change}`;
 }
 
-function variantsFor(brand, model, year) {
-  return VARIANTS.filter(v => v.brand === brand && v.model === model && Number(year) >= v.years[0] && Number(year) <= v.years[1]);
+function variantsFor(brand, model, year, fuel = "") {
+  return VARIANTS.filter(v => v.brand === brand && v.model === model && Number(year) >= v.years[0] && Number(year) <= v.years[1] && (!fuel || v.fuel === fuel));
+}
+
+function baseFuelFor(car) {
+  return car.baseFuel || (car.fuel === "mhev" ? "gasoline" : car.fuel);
+}
+
+function hasTechnicalProfile(car) {
+  return Boolean(car.catalogued || car.verified);
 }
 
 function componentsFor(car) {
   const tech = new Set(car.tech || []);
-  ["abs", "eps", "ac", "tpms"].forEach(item => tech.add(item));
+  const baseFuel = baseFuelFor(car);
+  // Equipamiento de seguridad que pasó a ser obligatorio en turismos nuevos
+  // de la UE. En años anteriores podía ser opcional, por lo que no se afirma.
+  if (Number(car.year) >= 2005) tech.add("abs");
+  if (Number(car.year) >= 2015) ["esc", "tpms"].forEach(item => tech.add(item));
   if (car.turbo !== "no" && car.fuel !== "electric") tech.add("turbo");
-  if (car.fuel === "diesel") ["commonRail", "egr", "dpf"].forEach(item => tech.add(item));
-  if (["gasoline", "hybrid", "phev"].includes(car.fuel)) ["lambda", "catalyst"].forEach(item => tech.add(item));
-  if (car.transmission === "automatic" && car.gearbox === "7DCT") tech.add("dct");
+  if (baseFuel === "diesel" && (/dCi|TDCi|CRDi|CDTI|EcoBlue|Blue dCi|Diesel/i.test(car.engine || "") || (/TDI/i.test(car.engine || "") && Number(car.year) >= 2009))) tech.add("commonRail");
+  if (baseFuel === "diesel" && Number(car.year) >= 2011) tech.add("dpf");
+  if (baseFuel === "gasoline") ["lambda", "catalyst"].forEach(item => tech.add(item));
+  if (car.transmission === "automatic" && /DSG|DCT|EDC|Powershift/i.test(car.gearbox || "")) tech.add("dct");
   return [...tech].filter(key => COMPONENT_LABELS[key]).map(key => ({ key, label: COMPONENT_LABELS[key] }));
 }
 
@@ -479,7 +492,7 @@ function renderQuestion() {
 
 function applicability(car) {
   const combustion = car.fuel !== "electric";
-  const tags = new Set(["all", car.fuel, car.transmission]);
+  const tags = new Set(["all", car.fuel, baseFuelFor(car), car.transmission]);
   if (combustion) tags.add("combustion");
   if (car.fuel !== "electric" && car.turbo !== "no") tags.add("turbo");
   (car.tech || []).forEach(tag => tags.add(tag));
@@ -523,6 +536,7 @@ function renderResults() {
 
 function maintenanceItems(car) {
   const combustion = car.fuel !== "electric";
+  const baseFuel = baseFuelFor(car);
   const tech = new Set(car.tech || []);
   const items = [
     ["tyres", "Neumáticos y presiones", "Cada mes y antes de un viaje"],
@@ -532,8 +546,8 @@ function maintenanceItems(car) {
   ];
   if (combustion) items.unshift(["oil", "Aceite y filtro", "Según motor: normalmente 15.000–30.000 km o 1 año"]);
   if (combustion) items.push(["air", "Filtro de aire", "Habitualmente cada 30.000–60.000 km"]);
-  if (car.fuel === "diesel") items.push(["fuelfilter", "Filtro de combustible diésel", "Habitualmente cada 30.000–60.000 km"]);
-  if (["gasoline", "hybrid", "phev"].includes(car.fuel)) items.push(["spark", "Bujías", "Según tipo: aproximadamente 30.000–90.000 km"]);
+  if (baseFuel === "diesel") items.push(["fuelfilter", "Filtro de combustible diésel", "Habitualmente cada 30.000–60.000 km"]);
+  if (baseFuel === "gasoline") items.push(["spark", "Bujías", "Según tipo: aproximadamente 30.000–90.000 km"]);
   if (tech.has("timingChain")) items.push(["timing", "Cadena de distribución", "Sin cambio periódico fijo; revisar ruidos, tensor y especificación de aceite"]);
   else if (combustion) items.push(["timing", "Distribución", "Confirmar correa/cadena y plazo exacto del motor"]);
   if (tech.has("dct")) items.push(["gearbox", `Transmisión ${car.gearbox || "DCT"}`, "Revisar aceite, fugas y comportamiento según plan específico de la caja"]);
@@ -541,7 +555,7 @@ function maintenanceItems(car) {
   if (tech.has("dpf")) items.push(["dpf", "DPF y sistema de emisiones", "Vigilar regeneraciones, nivel de aceite y uso frecuente en trayectos cortos"]);
   if (tech.has("adblue")) items.push(["adblue", "AdBlue / SCR", "Comprobar nivel, avisos y cristalización en cada revisión"]);
   if (tech.has("mhev48")) items.push(["mhev48", "Sistema híbrido de 48 V", "Inspección visual de correa MHSG, conexiones y avisos del sistema"]);
-  if (["electric", "hybrid", "phev"].includes(car.fuel)) items.push(["hv", "Sistema de alto voltaje", "Inspección profesional según fabricante"]);
+  if (["electric", "hybrid", "phev", "mhev"].includes(car.fuel)) items.push(["hv", "Sistema electrificado", "Inspección profesional según fabricante"]);
   return items;
 }
 
@@ -612,7 +626,7 @@ function openCarForm() {
         <label class="field"><span>Año</span><select name="year" id="yearSelect"></select></label>
         <label class="field"><span>Combustible</span><select name="fuel" id="fuelSelect">${Object.entries(FUELS).map(([key, value]) => `<option value="${key}">${value}</option>`).join("")}</select></label>
       </div>
-      <label class="field" id="variantField"><span>Versión técnica</span><select name="variantId" id="variantSelect"><option value="">Configurar manualmente</option></select><small class="muted" id="variantNote">Las versiones verificadas completan automáticamente motor, cambio y componentes.</small></label>
+      <label class="field" id="variantField"><span>Versión técnica</span><select name="variantId" id="variantSelect"><option value="">Configurar manualmente</option></select><small class="muted" id="variantNote">El catálogo completa automáticamente motor, cambio y componentes; confirma el código de motor si lo conoces.</small></label>
       <div class="two-cols form-grid">
         <label class="field"><span>Potencia (CV)</span><input required name="power" id="powerInput" inputmode="numeric" type="number" min="30" max="1000" placeholder="Ej. 110"></label>
         <label class="field"><span>Cambio</span><select name="transmission" id="transmissionSelect"><option value="manual">Manual</option><option value="automatic">Automático</option></select></label>
@@ -637,23 +651,31 @@ function openCarForm() {
     fuel.value = spec.fuel; power.value = spec.power; transmission.value = spec.transmission; turbo.value = spec.turbo;
   };
   const updateVariants = () => {
-    const matches = variantsFor(brand.value, model.value, year.value);
+    const matches = variantsFor(brand.value, model.value, year.value, fuel.value);
     variantField.style.display = matches.length ? "grid" : "none";
     variant.innerHTML = `<option value="">Otra versión / configurar manualmente</option>${matches.map(v => `<option value="${v.id}">${v.generation} · ${v.engine} · ${v.gearbox}</option>`).join("")}`;
+    variant.value = "";
   };
-  const updateYears = () => {
-    const [min, max] = VEHICLES[brand.value][model.value];
-    year.innerHTML = Array.from({ length: max - min + 1 }, (_, i) => max - i).map(y => `<option>${y}</option>`).join("");
+  const updateFuels = () => {
+    const matches = variantsFor(brand.value, model.value, year.value);
+    const available = [...new Set(matches.map(v => v.fuel))];
+    const previous = fuel.value;
+    fuel.innerHTML = (available.length ? available : Object.keys(FUELS)).map(key => `<option value="${key}">${FUELS[key]}</option>`).join("");
+    if (available.includes(previous)) fuel.value = previous;
     updateVariants();
   };
+  const updateYears = () => {
+    year.innerHTML = yearsForModel(brand.value, model.value).map(y => `<option>${y}</option>`).join("");
+    updateFuels();
+  };
   const updateModels = () => { model.innerHTML = Object.keys(VEHICLES[brand.value]).map(m => `<option>${m}</option>`).join(""); updateYears(); };
-  brand.addEventListener("change", updateModels); model.addEventListener("change", updateYears); year.addEventListener("change", updateVariants); variant.addEventListener("change", applyVariant); updateModels();
+  brand.addEventListener("change", updateModels); model.addEventListener("change", updateYears); year.addEventListener("change", updateFuels); fuel.addEventListener("change", updateVariants); variant.addEventListener("change", applyVariant); updateModels();
   sheetContent.querySelector("[data-close]").addEventListener("click", closeSheet);
   sheetContent.querySelector("#carForm").addEventListener("submit", event => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(event.target));
     const spec = VARIANTS.find(v => v.id === data.variantId);
-    const verified = spec ? { generation: spec.generation, engine: spec.engine, gearbox: spec.gearbox, tech: spec.tech, fuel: spec.fuel, power: spec.power, transmission: spec.transmission, turbo: spec.turbo, verified: true } : {};
+    const verified = spec ? { generation: spec.generation, engine: spec.engine, gearbox: spec.gearbox, tech: spec.tech, fuel: spec.fuel, baseFuel: spec.baseFuel, power: spec.power, transmission: spec.transmission, turbo: spec.turbo, catalogued: true } : {};
     const car = { id: crypto.randomUUID?.() || String(Date.now()), ...data, ...verified, year: Number(data.year), power: Number(spec?.power || data.power), mileage: Number(data.mileage) };
     state.vehicles.push(car); selectedVehicleId = car.id; saveState(); closeSheet(); render(); showToast("Coche añadido al garaje");
   });
@@ -663,18 +685,18 @@ function openCarDetails(id) {
   const car = state.vehicles.find(v => v.id === id); if (!car) return;
   const components = componentsFor(car);
   openSheet(`
-    <p class="eyebrow">${car.verified ? "Versión técnica identificada" : "Configuración manual"}</p>
+    <p class="eyebrow">${hasTechnicalProfile(car) ? "Versión técnica identificada" : "Configuración manual"}</p>
     <h2>${escapeHtml(vehicleName(car))}</h2>
     <p class="muted">${escapeHtml(car.generation ? `${car.generation} · ${car.engine}` : vehicleDetails(car))}</p>
     <div class="selector-list">
       <div class="selector-card"><strong>${car.mileage.toLocaleString("es-ES")} km</strong><small>Kilometraje registrado</small></div>
-      <div class="selector-card"><strong>${escapeHtml(vehicleDetails(car))}</strong><small>${car.verified ? "Configuración procedente del catálogo técnico" : "Datos introducidos manualmente"}</small></div>
+      <div class="selector-card"><strong>${escapeHtml(vehicleDetails(car))}</strong><small>${hasTechnicalProfile(car) ? "Configuración procedente del catálogo técnico" : "Datos introducidos manualmente"}</small></div>
       ${car.engineCode ? `<div class="selector-card"><strong>${escapeHtml(car.engineCode)}</strong><small>Código de motor</small></div>` : ""}
       ${car.lastDiagnosis ? `<div class="selector-card"><strong>${escapeHtml(car.lastDiagnosis.results[0].name)}</strong><small>Último diagnóstico · ${car.lastDiagnosis.results[0].match}% de coincidencia</small></div>` : ""}
     </div>
-    <div class="section-head"><div><h3>Componentes identificados</h3><p>${components.length} sistemas aplicados al diagnóstico</p></div></div>
+    <div class="section-head"><div><h3>Componentes identificados</h3><p>${components.length} sistemas aplicados; no se presupone equipamiento opcional</p></div></div>
     <div class="component-grid">${components.map(c => `<div class="component-pill"><span>✓</span>${escapeHtml(c.label)}</div>`).join("")}</div>
-    ${!car.verified ? `<div class="notice"><span>ℹ</span><div><strong>Perfil parcialmente genérico</strong>Añade una versión técnica verificada cuando esté disponible para distinguir componentes específicos.</div></div>` : ""}
+    ${!hasTechnicalProfile(car) ? `<div class="notice"><span>ℹ</span><div><strong>Perfil parcialmente genérico</strong>Selecciona una versión técnica del catálogo para distinguir componentes específicos.</div></div>` : ""}
     <div class="button-row"><button class="button lime" data-diagnose-car>Diagnosticar</button><button class="button ghost" data-maintenance-car>Mantenimiento</button></div>
     <button class="button danger" style="margin-top:10px" data-delete-car>Eliminar del garaje</button>
   `);
