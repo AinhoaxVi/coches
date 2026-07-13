@@ -23,13 +23,45 @@ const FUELS = {
   gasoline: "Gasolina", diesel: "Diésel", hybrid: "Híbrido", phev: "Híbrido enchufable", electric: "Eléctrico"
 };
 
+// Las variantes verificadas sustituyen la configuración genérica cuando existe
+// una ficha técnica concreta. El resto de modelos sigue admitiendo alta manual.
+const VARIANTS = [
+  { id: "i30-nl-14-140-m", brand: "Hyundai", model: "i30", years: [2018, 2020], generation: "PD · N Line", engine: "1.4 T-GDi 140 CV", fuel: "gasoline", power: 140, transmission: "manual", gearbox: "6MT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "catalyst", "timingChain", "startStop"] },
+  { id: "i30-nl-14-140-d", brand: "Hyundai", model: "i30", years: [2018, 2020], generation: "PD · N Line", engine: "1.4 T-GDi 140 CV", fuel: "gasoline", power: 140, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "catalyst", "timingChain", "startStop", "dct"] },
+  { id: "i30-nl-16-136-m", brand: "Hyundai", model: "i30", years: [2018, 2020], generation: "PD · N Line", engine: "1.6 CRDi 136 CV", fuel: "diesel", power: 136, transmission: "manual", gearbox: "6MT", turbo: "yes", tech: ["commonRail", "turbo", "egr", "dpf", "scr", "adblue", "timingChain", "startStop"] },
+  { id: "i30-nl-16-136-d", brand: "Hyundai", model: "i30", years: [2018, 2020], generation: "PD · N Line", engine: "1.6 CRDi 136 CV", fuel: "diesel", power: 136, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["commonRail", "turbo", "egr", "dpf", "scr", "adblue", "timingChain", "startStop", "dct"] },
+  { id: "i30-nl-10-120-mhev-m", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.0 T-GDi 120 CV 48V", fuel: "gasoline", power: 120, transmission: "manual", gearbox: "6iMT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "gpf", "timingChain", "mhev48", "mhsg", "dcDc", "startStop"] },
+  { id: "i30-nl-10-120-mhev-d", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.0 T-GDi 120 CV 48V", fuel: "gasoline", power: 120, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "gpf", "timingChain", "mhev48", "mhsg", "dcDc", "startStop", "dct"] },
+  { id: "i30-nl-15-160-mhev-m", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.5 T-GDi 160 CV 48V", fuel: "gasoline", power: 160, transmission: "manual", gearbox: "6iMT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "gpf", "timingChain", "mhev48", "mhsg", "dcDc", "startStop"] },
+  { id: "i30-nl-15-160-mhev-d", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.5 T-GDi 160 CV 48V", fuel: "gasoline", power: 160, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "gpf", "timingChain", "mhev48", "mhsg", "dcDc", "startStop", "dct"] },
+  { id: "i30-nl-16-136-mhev-m", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.6 CRDi 136 CV 48V", fuel: "diesel", power: 136, transmission: "manual", gearbox: "6iMT", turbo: "yes", tech: ["commonRail", "turbo", "egr", "dpf", "scr", "adblue", "timingChain", "mhev48", "mhsg", "dcDc", "startStop"] },
+  { id: "i30-nl-16-136-mhev-d", brand: "Hyundai", model: "i30", years: [2021, 2024], generation: "PD restyling · N Line", engine: "1.6 CRDi 136 CV 48V", fuel: "diesel", power: 136, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["commonRail", "turbo", "egr", "dpf", "scr", "adblue", "timingChain", "mhev48", "mhsg", "dcDc", "startStop", "dct"] },
+  { id: "i30-nl-15-140-d", brand: "Hyundai", model: "i30", years: [2025, 2026], generation: "PD restyling II · N Line", engine: "1.5 T-GDi 140 CV", fuel: "gasoline", power: 140, transmission: "automatic", gearbox: "7DCT", turbo: "yes", tech: ["directInjection", "turbo", "lambda", "gpf", "timingChain", "startStop", "dct"] }
+];
+
+const COMPONENT_LABELS = {
+  directInjection: "Inyección directa de gasolina", commonRail: "Inyección diésel common-rail",
+  turbo: "Turbo e intercooler", lambda: "Sondas lambda", catalyst: "Catalizador",
+  gpf: "Filtro de partículas de gasolina (GPF)", egr: "Válvula EGR", dpf: "Filtro de partículas diésel (DPF)",
+  scr: "Catalizador SCR", adblue: "Sistema AdBlue", timingChain: "Distribución por cadena",
+  startStop: "Start/Stop", dct: "Cambio de doble embrague 7DCT", mhev48: "Batería híbrida de 48 V",
+  mhsg: "Motor-generador MHSG", dcDc: "Convertidor DC/DC", abs: "ABS y control de estabilidad",
+  eps: "Dirección asistida eléctrica", ac: "Climatización", tpms: "Control de presión de neumáticos"
+};
+
 const SYMPTOMS = [
   { id: "start", icon: "◉", label: "No arranca o le cuesta" },
   { id: "power", icon: "↗", label: "Pierde potencia o da tirones" },
   { id: "warning", icon: "!", label: "Testigo encendido" },
   { id: "smoke", icon: "≋", label: "Humo u olor extraño" },
   { id: "heat", icon: "♨", label: "Se calienta demasiado" },
-  { id: "noise", icon: "≈", label: "Ruido o vibración" }
+  { id: "noise", icon: "≈", label: "Ruido o vibración" },
+  { id: "braking", icon: "⊘", label: "Frenos o pedal" },
+  { id: "steering", icon: "◌", label: "Dirección o estabilidad" },
+  { id: "climate", icon: "❄", label: "Climatización" },
+  { id: "leak", icon: "⌁", label: "Fuga o mancha" },
+  { id: "gearbox", icon: "⇄", label: "Cambio o embrague" },
+  { id: "electric48", icon: "ϟ", label: "Sistema eléctrico / 48 V" }
 ];
 
 const FAULTS = {
@@ -54,7 +86,39 @@ const FAULTS = {
   balance: { name: "Neumáticos, equilibrado o alineación", systems: ["all"], urgency: "media", desc: "El estado de las ruedas puede provocar vibraciones o desvíos." },
   brakes: { name: "Frenos desgastados o deformados", systems: ["all"], urgency: "alta", desc: "Pastillas, discos o componentes de freno requieren una revisión prioritaria." },
   sensor: { name: "Sensor o conexión eléctrica", systems: ["all"], urgency: "media", desc: "Un sensor, conector o cableado puede estar generando una lectura incoherente." },
-  tractionBattery: { name: "Batería de tracción o gestión de alto voltaje", systems: ["electric", "hybrid", "phev"], urgency: "alta", desc: "El sistema de alto voltaje necesita diagnóstico especializado; no debe manipularse." }
+  tractionBattery: { name: "Batería de tracción o gestión de alto voltaje", systems: ["electric", "hybrid", "phev"], urgency: "alta", desc: "El sistema de alto voltaje necesita diagnóstico especializado; no debe manipularse." },
+  brakePads: { name: "Pastillas de freno desgastadas", systems: ["all"], urgency: "alta", desc: "El material de fricción puede estar cerca de su límite o haber llegado al avisador." },
+  brakeDiscs: { name: "Discos de freno deformados o gastados", systems: ["all"], urgency: "alta", desc: "La vibración al frenar suele relacionarse con discos deformados o desgaste irregular." },
+  brakeCaliper: { name: "Pinza de freno agarrotada", systems: ["all"], urgency: "alta", desc: "Una pinza puede quedarse frenada, calentar una rueda y desviar el vehículo." },
+  absSensor: { name: "Sensor ABS o aro reluctor", systems: ["all"], urgency: "alta", desc: "Un captador de rueda o su cableado puede desactivar ABS y control de estabilidad." },
+  brakeFluid: { name: "Líquido de frenos bajo o degradado", systems: ["all"], urgency: "alta", desc: "Un pedal esponjoso o un nivel bajo requiere revisión inmediata del circuito." },
+  brakeBooster: { name: "Servofreno o bomba de vacío", systems: ["combustion"], urgency: "alta", desc: "La asistencia puede ser insuficiente y endurecer notablemente el pedal." },
+  alignment: { name: "Alineación fuera de tolerancia", systems: ["all"], urgency: "media", desc: "El coche puede desviarse y desgastar los neumáticos de forma irregular." },
+  tieRod: { name: "Rótula o terminal de dirección", systems: ["all"], urgency: "alta", desc: "Una holgura de dirección puede producir golpes, imprecisión y desgaste de neumáticos." },
+  controlArm: { name: "Silentblock o brazo de suspensión", systems: ["all"], urgency: "media", desc: "El caucho o una rótula de suspensión puede tener holgura y transmitir golpes." },
+  shock: { name: "Amortiguador o copela", systems: ["all"], urgency: "media", desc: "Un amortiguador con fuga o una copela dañada reduce estabilidad y confort." },
+  eps: { name: "Dirección asistida eléctrica (EPS)", systems: ["all"], urgency: "alta", desc: "La asistencia eléctrica, su sensor de par o alimentación pueden estar fallando." },
+  tyreDamage: { name: "Neumático deformado o dañado", systems: ["all"], urgency: "alta", desc: "Una deformación, presión incorrecta o daño interno puede causar vibración e inestabilidad." },
+  acGas: { name: "Fuga o carga baja de refrigerante A/C", systems: ["all"], urgency: "baja", desc: "El circuito de climatización puede haber perdido refrigerante por una fuga." },
+  acCompressor: { name: "Compresor o embrague del aire acondicionado", systems: ["all"], urgency: "media", desc: "El compresor puede no acoplar, no generar presión o producir ruido." },
+  blower: { name: "Ventilador interior o resistencia", systems: ["all"], urgency: "baja", desc: "El ventilador, regulador o su alimentación pueden impedir el flujo de aire." },
+  blendDoor: { name: "Trampilla o actuador de climatización", systems: ["all"], urgency: "baja", desc: "Un actuador puede impedir mezclar o dirigir el aire correctamente." },
+  cabinFilter: { name: "Filtro de habitáculo obstruido", systems: ["all"], urgency: "baja", desc: "Un filtro saturado reduce mucho el caudal y favorece olores o empañamiento." },
+  oilLeak: { name: "Fuga de aceite de motor", systems: ["combustion"], urgency: "alta", desc: "Juntas, retenes, tapa o cárter pueden estar perdiendo aceite." },
+  gearboxLeak: { name: "Fuga de aceite de transmisión", systems: ["manual", "automatic"], urgency: "alta", desc: "La caja o un retén puede perder lubricante y sufrir daños si continúa circulando." },
+  fuelLeak: { name: "Fuga de combustible", systems: ["combustion"], urgency: "alta", desc: "Existe riesgo de incendio; detén el vehículo y no lo vuelvas a arrancar." },
+  cvJoint: { name: "Junta homocinética o palier", systems: ["all"], urgency: "media", desc: "Un chasquido al girar o vibración al acelerar puede proceder de un palier." },
+  engineMount: { name: "Soporte de motor o cambio", systems: ["all"], urgency: "media", desc: "Un soporte cedido transmite vibración y golpes al arrancar o cambiar de carga." },
+  dctClutch: { name: "Embragues del cambio DCT", systems: ["dct"], urgency: "media", desc: "Los embragues pueden producir temblores, resbalamiento o tirones a baja velocidad." },
+  dctActuator: { name: "Actuador o mecatrónica DCT", systems: ["dct"], urgency: "alta", desc: "El control electrohidráulico puede provocar avisos, marcha de emergencia o falta de selección." },
+  gearboxOil: { name: "Aceite de transmisión degradado o nivel incorrecto", systems: ["automatic", "manual"], urgency: "media", desc: "El lubricante o un nivel incorrecto puede empeorar cambios, ruidos y temperatura." },
+  clutchHydraulic: { name: "Circuito hidráulico del embrague", systems: ["manual"], urgency: "alta", desc: "Bomba o bombín pueden impedir desembragar con normalidad." },
+  battery48: { name: "Batería de 48 V o gestión MHEV", systems: ["mhev48"], urgency: "alta", desc: "La batería auxiliar híbrida o su unidad de control puede limitar Start/Stop y asistencia." },
+  mhsg: { name: "Motor-generador MHSG y correa", systems: ["mhsg"], urgency: "alta", desc: "El generador de 48 V, su tensor o correa pueden afectar carga, arranque y asistencia." },
+  dcDc: { name: "Convertidor DC/DC", systems: ["dcDc"], urgency: "alta", desc: "El convertidor puede no alimentar correctamente la red de 12 V desde el sistema de 48 V." },
+  ground: { name: "Masa, fusible o conexión principal", systems: ["all"], urgency: "media", desc: "Una conexión floja, sulfatada o un fusible puede causar fallos eléctricos intermitentes." },
+  gpf: { name: "Filtro de partículas de gasolina (GPF)", systems: ["gpf"], urgency: "media", desc: "Trayectos cortos repetidos pueden dificultar la regeneración del filtro de gasolina." },
+  adblue: { name: "Sistema AdBlue / SCR", systems: ["adblue"], urgency: "alta", desc: "Nivel, inyector, calentador o sensores SCR pueden provocar aviso y bloqueo de arranque futuro." }
 };
 
 const FLOWS = {
@@ -144,6 +208,90 @@ const FLOWS = {
     { q: "¿Empeora al aumentar la velocidad?", a: [
       ["Sí", { bearing: 4, balance: 4 }], ["No", { clutch: 3, transmission: 3 }], ["Solo al frenar", { brakes: 6 }]
     ]}
+  ],
+  braking: [
+    { q: "¿Qué notas al frenar?", a: [
+      ["Chirrido o roce", { brakePads: 6, brakeDiscs: 3 }], ["Vibra el volante", { brakeDiscs: 7, controlArm: 2 }], ["Pedal blando", { brakeFluid: 7, brakeCaliper: 2 }], ["Pedal muy duro", { brakeBooster: 7 }]
+    ]},
+    { q: "¿El coche se desvía hacia un lado?", a: [
+      ["Sí", { brakeCaliper: 6, tyreDamage: 2, alignment: 2 }], ["No", { brakePads: 2, brakeDiscs: 2 }], ["No estoy seguro", {}]
+    ]},
+    { q: "¿Hay algún testigo de freno, ABS o estabilidad?", a: [
+      ["ABS / estabilidad", { absSensor: 7 }], ["Freno rojo", { brakeFluid: 6, brakePads: 2 }], ["Ninguno", { brakePads: 2, brakeDiscs: 2, brakeCaliper: 2 }]
+    ]},
+    { q: "¿Alguna rueda huele a quemado o está muy caliente?", a: [
+      ["Sí", { brakeCaliper: 8 }], ["No", { brakePads: 2, brakeDiscs: 2 }], ["No lo he comprobado", {}]
+    ]}
+  ],
+  steering: [
+    { q: "¿Cuál es el problema principal?", a: [
+      ["Se desvía", { alignment: 6, tyreDamage: 4, brakeCaliper: 2 }], ["Volante duro", { eps: 7, tyreDamage: 2 }], ["Golpes al girar", { tieRod: 5, controlArm: 4, cvJoint: 3 }], ["Inestable en carretera", { shock: 5, tyreDamage: 4, alignment: 3 }]
+    ]},
+    { q: "¿El volante queda torcido al ir recto?", a: [
+      ["Sí", { alignment: 7, tieRod: 3 }], ["No", { shock: 2, tyreDamage: 2 }], ["A veces", { controlArm: 3, alignment: 2 }]
+    ]},
+    { q: "¿El ruido aumenta al girar a tope?", a: [
+      ["Sí, chasquidos", { cvJoint: 7 }], ["Sí, golpe seco", { tieRod: 5, controlArm: 4 }], ["No", { shock: 3, alignment: 2 }]
+    ]},
+    { q: "¿Hay aviso de dirección o estabilidad?", a: [
+      ["Dirección", { eps: 8 }], ["ESC / estabilidad", { absSensor: 5, tyreDamage: 2 }], ["Ninguno", { alignment: 2, controlArm: 2 }]
+    ]}
+  ],
+  climate: [
+    { q: "¿Qué hace la climatización?", a: [
+      ["Sale aire, pero no enfría", { acGas: 6, acCompressor: 4 }], ["No sale aire", { blower: 7, cabinFilter: 2, ground: 2 }], ["Sale muy poco aire", { cabinFilter: 7, blower: 3 }], ["Un lado enfría y otro no", { blendDoor: 7 }]
+    ]},
+    { q: "¿Escuchas un clic o ruido al activar el A/C?", a: [
+      ["Clic normal, pero no enfría", { acGas: 5 }], ["Ruido fuerte", { acCompressor: 7 }], ["No se oye nada", { acCompressor: 4, ground: 3 }], ["No lo sé", {}]
+    ]},
+    { q: "¿El ventilador funciona en alguna velocidad?", a: [
+      ["Solo en la máxima", { blower: 7 }], ["En ninguna", { blower: 5, ground: 4 }], ["En todas", { acGas: 3, acCompressor: 3, blendDoor: 2 }]
+    ]},
+    { q: "¿Se empañan mucho los cristales o hay mal olor?", a: [
+      ["Sí", { cabinFilter: 6, acGas: 2 }], ["No", { acCompressor: 2, blendDoor: 2 }], ["Solo huele al encender", { cabinFilter: 5 }]
+    ]}
+  ],
+  leak: [
+    { q: "¿De qué color parece la mancha?", a: [
+      ["Negra o marrón", { oilLeak: 7, gearboxLeak: 3 }], ["Verde, rosa o amarilla", { coolant: 7 }], ["Transparente y sin olor", { acGas: 1 }], ["Huele a combustible", { fuelLeak: 9 }]
+    ]},
+    { q: "¿Dónde aparece aproximadamente?", a: [
+      ["Bajo la parte delantera", { oilLeak: 4, coolant: 4 }], ["Zona central", { gearboxLeak: 5, fuelLeak: 2 }], ["Cerca de una rueda", { brakeFluid: 6, shock: 4 }], ["No puedo ubicarla", {}]
+    ]},
+    { q: "¿Ha bajado algún nivel?", a: [
+      ["Aceite", { oilLeak: 7 }], ["Refrigerante", { coolant: 7, waterpump: 2 }], ["Líquido de frenos", { brakeFluid: 9 }], ["Ninguno / no sé", {}]
+    ]},
+    { q: "¿La fuga continúa con el coche apagado?", a: [
+      ["Sí", { oilLeak: 3, coolant: 3, gearboxLeak: 3, fuelLeak: 3 }], ["Solo tras usar el A/C", { acGas: 2 }], ["Solo con el motor en marcha", { fuelLeak: 4, coolant: 3 }]
+    ]}
+  ],
+  gearbox: [
+    { q: "¿Qué problema notas con el cambio?", a: [
+      ["Temblores al iniciar la marcha", { dctClutch: 7, clutch: 6, engineMount: 3 }], ["No entra una marcha", { dctActuator: 7, clutchHydraulic: 6, transmission: 3 }], ["Golpe al cambiar", { dctActuator: 5, gearboxOil: 4, engineMount: 3 }], ["Patina al acelerar", { dctClutch: 7, clutch: 7 }]
+    ]},
+    { q: "¿Ocurre más en frío o en caliente?", a: [
+      ["En frío", { gearboxOil: 5, clutchHydraulic: 2 }], ["En caliente", { dctClutch: 4, dctActuator: 4, clutch: 3 }], ["Siempre", { transmission: 3, engineMount: 2 }]
+    ]},
+    { q: "¿Aparece un aviso de transmisión?", a: [
+      ["Sí", { dctActuator: 8, dctClutch: 3 }], ["No", { clutch: 3, engineMount: 2, gearboxOil: 2 }], ["Apareció y se quitó", { dctActuator: 5, sensor: 2 }]
+    ]},
+    { q: "¿Hay ruido al pisar o soltar el embrague?", a: [
+      ["Sí", { clutch: 6, clutchHydraulic: 3 }], ["No lleva pedal de embrague", { dctClutch: 5, dctActuator: 3 }], ["No", { gearboxOil: 3, transmission: 2 }]
+    ]}
+  ],
+  electric48: [
+    { q: "¿Qué aviso o comportamiento aparece?", a: [
+      ["Aviso del sistema 48 V", { battery48: 7, mhsg: 5, dcDc: 4 }], ["Start/Stop no funciona", { battery48: 5, battery: 4, mhsg: 2 }], ["Aviso de batería 12 V", { dcDc: 7, battery: 4, mhsg: 3 }], ["Ruido de correa", { mhsg: 8 }]
+    ]},
+    { q: "¿El coche arranca con normalidad?", a: [
+      ["Sí", { battery48: 3, dcDc: 3 }], ["Le cuesta", { battery: 4, mhsg: 4, battery48: 3 }], ["No arranca", { battery: 5, dcDc: 5, mhsg: 4 }]
+    ]},
+    { q: "¿El aviso aparece después de trayectos cortos?", a: [
+      ["Sí", { battery48: 5, battery: 3 }], ["No, también en viajes largos", { dcDc: 5, mhsg: 4 }], ["No estoy seguro", {}]
+    ]},
+    { q: "¿Se encienden varios testigos a la vez?", a: [
+      ["Sí", { dcDc: 5, ground: 5, battery: 3 }], ["Solo el de 48 V", { battery48: 5, mhsg: 3 }], ["Ninguno", { mhsg: 2, battery48: 2 }]
+    ]}
   ]
 };
 
@@ -151,6 +299,7 @@ const state = loadState();
 let currentView = "home";
 let selectedVehicleId = state.vehicles[0]?.id || null;
 let diagnosis = null;
+let installPrompt = null;
 
 const main = document.querySelector("#main");
 const sheet = document.querySelector("#sheet");
@@ -183,7 +332,31 @@ function vehicleName(v) {
 }
 
 function vehicleDetails(v) {
-  return `${v.year} · ${FUELS[v.fuel]} · ${v.power || "—"} CV · ${v.transmission === "manual" ? "Manual" : "Automático"}`;
+  const change = v.gearbox || (v.transmission === "manual" ? "Manual" : "Automático");
+  return `${v.year} · ${FUELS[v.fuel]} · ${v.power || "—"} CV · ${change}`;
+}
+
+function variantsFor(brand, model, year) {
+  return VARIANTS.filter(v => v.brand === brand && v.model === model && Number(year) >= v.years[0] && Number(year) <= v.years[1]);
+}
+
+function componentsFor(car) {
+  const tech = new Set(car.tech || []);
+  ["abs", "eps", "ac", "tpms"].forEach(item => tech.add(item));
+  if (car.turbo !== "no" && car.fuel !== "electric") tech.add("turbo");
+  if (car.fuel === "diesel") ["commonRail", "egr", "dpf"].forEach(item => tech.add(item));
+  if (["gasoline", "hybrid", "phev"].includes(car.fuel)) ["lambda", "catalyst"].forEach(item => tech.add(item));
+  if (car.transmission === "automatic" && car.gearbox === "7DCT") tech.add("dct");
+  return [...tech].filter(key => COMPONENT_LABELS[key]).map(key => ({ key, label: COMPONENT_LABELS[key] }));
+}
+
+function symptomsFor(car) {
+  const tech = new Set(car.tech || []);
+  return SYMPTOMS.filter(s => {
+    if (s.id === "smoke" && car.fuel === "electric") return false;
+    if (s.id === "electric48" && !tech.has("mhev48")) return false;
+    return true;
+  });
 }
 
 function selectedVehicle() {
@@ -222,11 +395,20 @@ function renderHome() {
         <span class="quick-icon">＋</span><strong>Añadir coche</strong><small>Configura tu garaje</small>
       </button>
     </section>
+    ${installExperience()}
     <div class="section-head"><div><h2>Tu garaje</h2><p class="muted">${state.vehicles.length} ${state.vehicles.length === 1 ? "vehículo" : "vehículos"}</p></div><button class="text-button" data-action="garage">Ver todos</button></div>
     ${cars.length ? `<div class="car-list">${cars.map(carCard).join("")}</div>` : emptyGarage()}
     <div class="notice"><span>⚠</span><div><strong>Orientación, no diagnóstico definitivo</strong>Si hay un testigo rojo, frenos deficientes, humo intenso o sobrecalentamiento, detén el vehículo en un lugar seguro.</div></div>
   `;
   bindCommonActions();
+}
+
+function installExperience() {
+  const standalone = window.matchMedia?.("(display-mode: standalone)").matches;
+  if (standalone) return `<div class="install-card"><span>✓</span><div class="install-copy"><strong>MotorClaro está instalada</strong><small>Puedes abrirla como cualquier otra aplicación.</small></div></div>`;
+  if (location.protocol === "file:") return `<div class="notice"><span>↓</span><div><strong>Para instalarla en Windows</strong>Ábrela desde su dirección HTTPS de GitHub Pages. Los archivos abiertos directamente no pueden instalar una PWA.</div></div>`;
+  if (installPrompt) return `<div class="install-card"><span>↓</span><div class="install-copy"><strong>Instalar MotorClaro</strong><small>Añádela a Windows y úsala sin conexión.</small></div><button data-action="install-app">Instalar</button></div>`;
+  return "";
 }
 
 function carCard(v) {
@@ -260,10 +442,10 @@ function renderDiagnosis() {
   main.innerHTML = `
     <section class="diag-intro">
       <div class="vehicle-chip">▰ ${escapeHtml(vehicleName(car))} · ${escapeHtml(String(car.year))}</div>
-      <h1>¿Qué notas?</h1><p>Elige el síntoma principal. Te haré solo las preguntas útiles para este coche.</p>
+      <h1>¿Qué notas?</h1><p>Elige el síntoma principal. El perfil de ${componentsFor(car).length} sistemas filtra una base de ${Object.keys(FAULTS).length} causas posibles.</p>
     </section>
     <div class="section-head"><div><h2>Síntoma principal</h2><p>Podrás empezar de nuevo en cualquier momento.</p></div></div>
-    <div class="symptom-grid">${SYMPTOMS.map(s => `<button class="symptom-card" data-symptom="${s.id}"><span>${s.icon}</span><strong>${s.label}</strong></button>`).join("")}</div>
+    <div class="symptom-grid">${symptomsFor(car).map(s => `<button class="symptom-card" data-symptom="${s.id}"><span>${s.icon}</span><strong>${s.label}</strong></button>`).join("")}</div>
     <button class="text-button" style="margin-top:18px" data-action="change-car">Cambiar de vehículo</button>
   `;
   main.querySelectorAll("[data-symptom]").forEach(btn => btn.addEventListener("click", () => {
@@ -300,6 +482,7 @@ function applicability(car) {
   const tags = new Set(["all", car.fuel, car.transmission]);
   if (combustion) tags.add("combustion");
   if (car.fuel !== "electric" && car.turbo !== "no") tags.add("turbo");
+  (car.tech || []).forEach(tag => tags.add(tag));
   return tags;
 }
 
@@ -340,6 +523,7 @@ function renderResults() {
 
 function maintenanceItems(car) {
   const combustion = car.fuel !== "electric";
+  const tech = new Set(car.tech || []);
   const items = [
     ["tyres", "Neumáticos y presiones", "Cada mes y antes de un viaje"],
     ["brakes", "Frenos", "Inspección cada 15.000–30.000 km"],
@@ -350,8 +534,13 @@ function maintenanceItems(car) {
   if (combustion) items.push(["air", "Filtro de aire", "Habitualmente cada 30.000–60.000 km"]);
   if (car.fuel === "diesel") items.push(["fuelfilter", "Filtro de combustible diésel", "Habitualmente cada 30.000–60.000 km"]);
   if (["gasoline", "hybrid", "phev"].includes(car.fuel)) items.push(["spark", "Bujías", "Según tipo: aproximadamente 30.000–90.000 km"]);
-  if (combustion) items.push(["timing", "Distribución", "Confirmar correa/cadena y plazo exacto del motor"]);
-  if (car.transmission === "automatic") items.push(["gearbox", "Aceite de caja automática", "Según caja: frecuentemente 60.000–120.000 km"]);
+  if (tech.has("timingChain")) items.push(["timing", "Cadena de distribución", "Sin cambio periódico fijo; revisar ruidos, tensor y especificación de aceite"]);
+  else if (combustion) items.push(["timing", "Distribución", "Confirmar correa/cadena y plazo exacto del motor"]);
+  if (tech.has("dct")) items.push(["gearbox", `Transmisión ${car.gearbox || "DCT"}`, "Revisar aceite, fugas y comportamiento según plan específico de la caja"]);
+  else if (car.transmission === "automatic") items.push(["gearbox", "Aceite de caja automática", "Según caja: frecuentemente 60.000–120.000 km"]);
+  if (tech.has("dpf")) items.push(["dpf", "DPF y sistema de emisiones", "Vigilar regeneraciones, nivel de aceite y uso frecuente en trayectos cortos"]);
+  if (tech.has("adblue")) items.push(["adblue", "AdBlue / SCR", "Comprobar nivel, avisos y cristalización en cada revisión"]);
+  if (tech.has("mhev48")) items.push(["mhev48", "Sistema híbrido de 48 V", "Inspección visual de correa MHSG, conexiones y avisos del sistema"]);
   if (["electric", "hybrid", "phev"].includes(car.fuel)) items.push(["hv", "Sistema de alto voltaje", "Inspección profesional según fabricante"]);
   return items;
 }
@@ -384,6 +573,15 @@ function bindCommonActions() {
   main.querySelector("[data-action='diagnose']")?.addEventListener("click", () => setView("diagnosis"));
   main.querySelector("[data-action='garage']")?.addEventListener("click", () => setView("garage"));
   main.querySelectorAll("[data-vehicle]").forEach(btn => btn.addEventListener("click", () => openCarDetails(btn.dataset.vehicle)));
+  main.querySelector("[data-action='install-app']")?.addEventListener("click", installApp);
+}
+
+async function installApp() {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  render();
 }
 
 function openSheet(html) {
@@ -412,13 +610,14 @@ function openCarForm() {
       </div>
       <div class="two-cols form-grid">
         <label class="field"><span>Año</span><select name="year" id="yearSelect"></select></label>
-        <label class="field"><span>Combustible</span><select name="fuel">${Object.entries(FUELS).map(([key, value]) => `<option value="${key}">${value}</option>`).join("")}</select></label>
+        <label class="field"><span>Combustible</span><select name="fuel" id="fuelSelect">${Object.entries(FUELS).map(([key, value]) => `<option value="${key}">${value}</option>`).join("")}</select></label>
       </div>
+      <label class="field" id="variantField"><span>Versión técnica</span><select name="variantId" id="variantSelect"><option value="">Configurar manualmente</option></select><small class="muted" id="variantNote">Las versiones verificadas completan automáticamente motor, cambio y componentes.</small></label>
       <div class="two-cols form-grid">
-        <label class="field"><span>Potencia (CV)</span><input required name="power" inputmode="numeric" type="number" min="30" max="1000" placeholder="Ej. 110"></label>
-        <label class="field"><span>Cambio</span><select name="transmission"><option value="manual">Manual</option><option value="automatic">Automático</option></select></label>
+        <label class="field"><span>Potencia (CV)</span><input required name="power" id="powerInput" inputmode="numeric" type="number" min="30" max="1000" placeholder="Ej. 110"></label>
+        <label class="field"><span>Cambio</span><select name="transmission" id="transmissionSelect"><option value="manual">Manual</option><option value="automatic">Automático</option></select></label>
       </div>
-      <label class="field"><span>¿Lleva turbo?</span><select name="turbo"><option value="yes">Sí</option><option value="no">No / atmosférico</option><option value="unknown">No lo sé</option></select></label>
+      <label class="field"><span>¿Lleva turbo?</span><select name="turbo" id="turboSelect"><option value="yes">Sí</option><option value="no">No / atmosférico</option><option value="unknown">No lo sé</option></select></label>
       <label class="field"><span>Código de motor (opcional)</span><input name="engineCode" maxlength="20" placeholder="Ej. CRKB"></label>
       <label class="field"><span>Kilometraje actual</span><input required name="mileage" inputmode="numeric" type="number" min="0" max="2000000" placeholder="Ej. 126000"></label>
       <div class="button-row"><button type="button" class="button ghost" data-close>Cancelar</button><button class="button">Guardar coche</button></div>
@@ -426,24 +625,59 @@ function openCarForm() {
   const brand = sheetContent.querySelector("#brandSelect");
   const model = sheetContent.querySelector("#modelSelect");
   const year = sheetContent.querySelector("#yearSelect");
+  const variant = sheetContent.querySelector("#variantSelect");
+  const variantField = sheetContent.querySelector("#variantField");
+  const fuel = sheetContent.querySelector("#fuelSelect");
+  const power = sheetContent.querySelector("#powerInput");
+  const transmission = sheetContent.querySelector("#transmissionSelect");
+  const turbo = sheetContent.querySelector("#turboSelect");
+  const applyVariant = () => {
+    const spec = VARIANTS.find(v => v.id === variant.value);
+    if (!spec) return;
+    fuel.value = spec.fuel; power.value = spec.power; transmission.value = spec.transmission; turbo.value = spec.turbo;
+  };
+  const updateVariants = () => {
+    const matches = variantsFor(brand.value, model.value, year.value);
+    variantField.style.display = matches.length ? "grid" : "none";
+    variant.innerHTML = `<option value="">Otra versión / configurar manualmente</option>${matches.map(v => `<option value="${v.id}">${v.generation} · ${v.engine} · ${v.gearbox}</option>`).join("")}`;
+  };
   const updateYears = () => {
     const [min, max] = VEHICLES[brand.value][model.value];
     year.innerHTML = Array.from({ length: max - min + 1 }, (_, i) => max - i).map(y => `<option>${y}</option>`).join("");
+    updateVariants();
   };
   const updateModels = () => { model.innerHTML = Object.keys(VEHICLES[brand.value]).map(m => `<option>${m}</option>`).join(""); updateYears(); };
-  brand.addEventListener("change", updateModels); model.addEventListener("change", updateYears); updateModels();
+  brand.addEventListener("change", updateModels); model.addEventListener("change", updateYears); year.addEventListener("change", updateVariants); variant.addEventListener("change", applyVariant); updateModels();
   sheetContent.querySelector("[data-close]").addEventListener("click", closeSheet);
   sheetContent.querySelector("#carForm").addEventListener("submit", event => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(event.target));
-    const car = { id: crypto.randomUUID?.() || String(Date.now()), ...data, year: Number(data.year), power: Number(data.power), mileage: Number(data.mileage) };
+    const spec = VARIANTS.find(v => v.id === data.variantId);
+    const verified = spec ? { generation: spec.generation, engine: spec.engine, gearbox: spec.gearbox, tech: spec.tech, fuel: spec.fuel, power: spec.power, transmission: spec.transmission, turbo: spec.turbo, verified: true } : {};
+    const car = { id: crypto.randomUUID?.() || String(Date.now()), ...data, ...verified, year: Number(data.year), power: Number(spec?.power || data.power), mileage: Number(data.mileage) };
     state.vehicles.push(car); selectedVehicleId = car.id; saveState(); closeSheet(); render(); showToast("Coche añadido al garaje");
   });
 }
 
 function openCarDetails(id) {
   const car = state.vehicles.find(v => v.id === id); if (!car) return;
-  openSheet(`<p class="eyebrow">En tu garaje</p><h2>${escapeHtml(vehicleName(car))}</h2><p class="muted">${escapeHtml(vehicleDetails(car))}</p><div class="selector-list"><div class="selector-card"><strong>${car.mileage.toLocaleString("es-ES")} km</strong><small>Kilometraje registrado</small></div>${car.engineCode ? `<div class="selector-card"><strong>${escapeHtml(car.engineCode)}</strong><small>Código de motor</small></div>` : ""}${car.lastDiagnosis ? `<div class="selector-card"><strong>${escapeHtml(car.lastDiagnosis.results[0].name)}</strong><small>Último diagnóstico · ${car.lastDiagnosis.results[0].match}% de coincidencia</small></div>` : ""}</div><div class="button-row"><button class="button lime" data-diagnose-car>Diagnosticar</button><button class="button ghost" data-maintenance-car>Mantenimiento</button></div><button class="button danger" style="margin-top:10px" data-delete-car>Eliminar del garaje</button>`);
+  const components = componentsFor(car);
+  openSheet(`
+    <p class="eyebrow">${car.verified ? "Versión técnica identificada" : "Configuración manual"}</p>
+    <h2>${escapeHtml(vehicleName(car))}</h2>
+    <p class="muted">${escapeHtml(car.generation ? `${car.generation} · ${car.engine}` : vehicleDetails(car))}</p>
+    <div class="selector-list">
+      <div class="selector-card"><strong>${car.mileage.toLocaleString("es-ES")} km</strong><small>Kilometraje registrado</small></div>
+      <div class="selector-card"><strong>${escapeHtml(vehicleDetails(car))}</strong><small>${car.verified ? "Configuración procedente del catálogo técnico" : "Datos introducidos manualmente"}</small></div>
+      ${car.engineCode ? `<div class="selector-card"><strong>${escapeHtml(car.engineCode)}</strong><small>Código de motor</small></div>` : ""}
+      ${car.lastDiagnosis ? `<div class="selector-card"><strong>${escapeHtml(car.lastDiagnosis.results[0].name)}</strong><small>Último diagnóstico · ${car.lastDiagnosis.results[0].match}% de coincidencia</small></div>` : ""}
+    </div>
+    <div class="section-head"><div><h3>Componentes identificados</h3><p>${components.length} sistemas aplicados al diagnóstico</p></div></div>
+    <div class="component-grid">${components.map(c => `<div class="component-pill"><span>✓</span>${escapeHtml(c.label)}</div>`).join("")}</div>
+    ${!car.verified ? `<div class="notice"><span>ℹ</span><div><strong>Perfil parcialmente genérico</strong>Añade una versión técnica verificada cuando esté disponible para distinguir componentes específicos.</div></div>` : ""}
+    <div class="button-row"><button class="button lime" data-diagnose-car>Diagnosticar</button><button class="button ghost" data-maintenance-car>Mantenimiento</button></div>
+    <button class="button danger" style="margin-top:10px" data-delete-car>Eliminar del garaje</button>
+  `);
   sheetContent.querySelector("[data-diagnose-car]").addEventListener("click", () => { selectedVehicleId = id; diagnosis = null; closeSheet(); setView("diagnosis"); });
   sheetContent.querySelector("[data-maintenance-car]").addEventListener("click", () => { selectedVehicleId = id; closeSheet(); setView("maintenance"); });
   sheetContent.querySelector("[data-delete-car]").addEventListener("click", () => {
@@ -467,6 +701,10 @@ document.querySelector("#profileButton").addEventListener("click", openProfile);
 sheet.addEventListener("click", event => { if (event.target === sheet) closeSheet(); });
 
 if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault(); installPrompt = event; if (currentView === "home") renderHome();
+});
+window.addEventListener("appinstalled", () => { installPrompt = null; showToast("MotorClaro instalada"); render(); });
 
 render();
 if (!state.profile.name) setTimeout(openProfile, 350);
