@@ -1,5 +1,5 @@
-const CACHE = "motorclaro-v4";
-const ASSETS = ["./", "./index.html", "./styles.css", "./catalog.js?v=4", "./app.js?v=4", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
+const CACHE = "motorclaro-v5";
+const ASSETS = ["./", "./index.html", "./styles.css", "./catalog.js?v=5", "./app.js?v=5", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));

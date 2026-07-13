@@ -95,6 +95,9 @@
       [2012, 2017, "GD", P("1.4 MPI", 100, ["6MT"]), P("1.6 GDi", 135, ["6MT", "6DCT"]), P("1.6 T-GDi Turbo", 186, ["6MT"]), D("1.6 CRDi", 110, ["6MT", "7DCT"]), D("1.6 CRDi", 136, ["6MT", "7DCT"])],
       [2018, 2020, "PD / N Line", P("1.0 T-GDi", 120, ["6MT"]), P("1.4 T-GDi", 140, ["6MT", "7DCT"]), D("1.6 CRDi", 116, ["6MT", "7DCT"]), D("1.6 CRDi", 136, ["6MT", "7DCT"]), P("2.0 T-GDi N", 275, ["6MT"])],
       [2021, 2023, "PD restyling", P("1.5 DPI", 110, ["6MT"]), M("1.0 T-GDi 48V", 120, ["6iMT", "7DCT"]), M("1.5 T-GDi 48V", 160, ["6iMT", "7DCT"]), M("1.6 CRDi 48V", 136, ["6iMT", "7DCT"], "diesel"), P("2.0 T-GDi N", 280, ["6MT", "8DCT"])],
+      [2022, 2024, "PD restyling · N Line 30 Aniversario · 5 puertas", P("1.0 T-GDi", 120, ["6MT"], ["timingChain", "ac"])],
+      [2022, 2024, "PD restyling · N Line 30 Aniversario · Fastback", P("1.0 T-GDi", 120, ["6MT"], ["timingChain", "ac"])],
+      [2022, 2024, "PD restyling · N Line 30 Aniversario · Wagon", P("1.0 T-GDi", 120, ["6MT"], ["timingChain", "ac"])],
       [2024, 2026, "PD restyling II / N Line", P("1.0 T-GDi", 100, ["6MT", "7DCT"]), P("1.5 DPI", 96, ["6MT"]), P("1.5 T-GDi", 140, ["7DCT"]), M("1.0 T-GDi 48V", 100, ["6iMT", "7DCT"]), M("1.5 T-GDi 48V", 140, ["7DCT"])]]],
     ["Hyundai", "Tucson", [
       [2004, 2009, "JM", P("2.0 MPI", 141, ["5MT", "4AT"]), P("2.7 V6", 175, ["4AT"]), D("2.0 CRDi", 140, ["6MT", "4AT"])],
