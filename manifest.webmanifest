@@ -1,0 +1,14 @@
+{
+  "name": "MotorClaro",
+  "short_name": "MotorClaro",
+  "description": "Tu garaje, mantenimiento y orientación de averías.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f2ec",
+  "theme_color": "#17231f",
+  "lang": "es",
+  "icons": [
+    { "src": "./icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
