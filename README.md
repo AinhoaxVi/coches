@@ -1,4 +1,4 @@
-# MotorClaro 2.0
+# MotorClaro 2.1
 
 PWA en español para organizar vehículos, orientar averías con triaje de seguridad, interpretar códigos OBD y registrar mantenimiento. Funciona en GitHub Pages sin servidor y conserva los datos del usuario en su dispositivo.
 
@@ -7,13 +7,13 @@ Aplicación publicada: <https://ainhoaxvi.github.io/coches/>
 ## Funciones
 
 - Garaje con alta, edición y eliminación de vehículos, kilometraje, matrícula, VIN y código de motor.
-- Catálogo local de 633 variantes de 26 modelos europeos, con 6 marcas, generaciones, combustible, potencia, cambio y sistemas confirmados.
+- Catálogo local de 725 variantes de 27 modelos europeos y 7 marcas, con generaciones, combustible, potencia, cambio y sistemas confirmados. Incluye 92 configuraciones del Saab 9-3 (1998-2014), con YS3D, YS3F, Cabrio, SportCombi, Viggen, 9-3X y NEVS.
 - 14 grupos de síntomas, 29 preguntas adaptativas y 74 causas de avería compatibles con gasolina, diésel, híbridos, eléctricos, transmisiones y sistemas de seguridad.
 - Formulario previo detallado: gravedad, frecuencia, aparición, temperatura/uso, códigos OBD, señales de emergencia y texto libre.
 - Diccionario integrado de 35 códigos OBD frecuentes y clasificación de coincidencia sin porcentajes engañosos.
 - Triaje explícito para frenos, temperatura, aceite, combustible y alta tensión.
-- Plan de mantenimiento por fecha y kilómetros, con coste, taller, notas e historial.
-- Decodificación VIN básica con WMI local y consulta opcional a NHTSA vPIC.
+- Plan de mantenimiento por versión: intervalos exactos solo en perfiles documentados y lista compatible sin plazos inventados para el resto, con coste, taller, notas e historial.
+- Decodificación VIN tolerante con WMI local y consulta opcional a NHTSA vPIC; un VIN europeo válido sigue aceptándose aunque la fuente estadounidense no devuelva modelo o motor.
 - Validación de formato de matrícula española y acceso al informe oficial de la DGT.
 - Copias de seguridad JSON, importación, modo oscuro, accesibilidad de teclado e instalación PWA.
 - Migración automática de datos guardados con MotorClaro 1.x.
@@ -51,6 +51,7 @@ Después visita `http://localhost:8080`. El flujo de GitHub Actions ejecuta las 
 - `app.js`: estado, vistas, formularios, historial, VIN y mantenimiento.
 - `catalog.js`: variantes y perfil técnico confirmado.
 - `diagnosis-data.js`: causas, síntomas, preguntas y códigos OBD.
+- `maintenance-data.js`: perfiles de mantenimiento exactos y planes compatibles sin intervalos genéricos.
 - `styles.css`: diseño adaptable y temas.
 - `sw.js` / `manifest.webmanifest`: instalación y modo sin conexión.
 - `tests/`: controles de integridad del catálogo, motor de diagnóstico y PWA.

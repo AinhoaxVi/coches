@@ -155,7 +155,20 @@
       [2008, 2013, "Insignia A", P("1.4 Turbo", 140, ["6MT"]), P("2.0 Turbo", 220, ["6MT", "6AT"]), P("2.8 V6 Turbo OPC", 325, ["6MT", "6AT"]), D("2.0 CDTI", 130, ["6MT", "6AT"]), D("2.0 CDTI", 160, ["6MT", "6AT"])],
       [2014, 2017, "Insignia A restyling", P("1.4 Turbo", 140, ["6MT"]), P("1.6 SIDI Turbo", 170, ["6MT", "6AT"]), D("1.6 CDTI", 136, ["6MT"]), D("2.0 CDTI", 170, ["6MT", "6AT"])],
       [2018, 2020, "Insignia B", P("1.5 Turbo", 165, ["6MT", "6AT"]), P("2.0 Turbo", 260, ["8AT"]), D("1.6 Diesel", 136, ["6MT", "6AT"]), D("2.0 Diesel", 170, ["8AT"])],
-      [2021, 2022, "Insignia B restyling", P("2.0 Turbo", 200, ["9AT"]), D("1.5 Diesel", 122, ["6MT", "8AT"]), D("2.0 Diesel", 174, ["8AT"])]]]
+      [2021, 2022, "Insignia B restyling", P("2.0 Turbo", 200, ["9AT"]), D("1.5 Diesel", 122, ["6MT", "8AT"]), D("2.0 Diesel", 174, ["8AT"])]]],
+
+    ["Saab", "9-3", [
+      [1998, 2000, "9-3 I YS3D · 3/5 puertas y Cabrio", P("2.0i B204i", 130, ["5MT", "4AT"], ["portInjection"]), P("2.0t B204E", 154, ["5MT", "4AT"], ["portInjection", "turbo"]), P("2.0 Turbo B204L", 185, ["5MT", "4AT"], ["portInjection", "turbo"]), P("2.0 Turbo Aero B204R", 200, ["5MT"], ["portInjection", "turbo"]), P("2.3i B234i", 150, ["5MT", "4AT"], ["portInjection"]), D("2.2 TiD D223L", 115, ["5MT"])],
+      [1999, 2002, "9-3 I Viggen YS3D", P("2.3 Turbo B235R Viggen", 225, ["5MT"], ["portInjection", "turbo"])],
+      [2001, 2002, "9-3 I YS3D · última evolución", P("2.0t B205E", 150, ["5MT", "4AT"], ["portInjection", "turbo"]), P("2.0 Turbo B205L", 185, ["5MT", "4AT"], ["portInjection", "turbo"]), P("2.0 Turbo Aero B205R", 205, ["5MT"], ["portInjection", "turbo"]), D("2.2 TiD D223L", 125, ["5MT"])],
+      [2003, 2003, "9-3 I Cabrio YS3D · final", P("2.0t B205E", 150, ["5MT", "4AT"], ["portInjection", "turbo"]), P("2.0 Turbo Aero B205R", 205, ["5MT"], ["portInjection", "turbo"])],
+      [2003, 2006, "9-3 II YS3F · Sport Sedan", P("1.8i Z18XE", 122, ["5MT"], ["portInjection"]), P("1.8t B207E", 150, ["5MT", "5AT"], ["portInjection", "turbo"]), P("2.0t B207L", 175, ["5MT", "5AT"], ["portInjection", "turbo"]), P("2.0T Aero B207R", 210, ["6MT", "5AT"], ["portInjection", "turbo"]), P("2.8 V6 Turbo B284L", 250, ["6MT", "6AT"], ["portInjection", "turbo"]), D("2.2 TiD D223L", 125, ["5MT"]), D("1.9 TiD Z19DT", 120, ["6MT", "6AT"]), D("1.9 TiD Z19DTH", 150, ["6MT", "6AT"])],
+      [2004, 2007, "9-3 II YS3F · Cabrio", P("1.8t B207E", 150, ["5MT", "5AT"], ["portInjection", "turbo"]), P("2.0t B207L", 175, ["6MT", "5AT"], ["portInjection", "turbo"]), P("2.0T Aero B207R", 210, ["6MT", "5AT"], ["portInjection", "turbo"]), P("2.8 V6 Turbo B284L", 250, ["6MT", "6AT"], ["portInjection", "turbo"]), D("1.9 TiD Z19DTH", 150, ["6MT", "6AT"])],
+      [2005, 2007, "9-3 II YS3F · SportCombi", P("1.8i Z18XE", 122, ["5MT"], ["portInjection"]), P("1.8t B207E", 150, ["5MT", "5AT"], ["portInjection", "turbo"]), P("2.0t B207L", 175, ["6MT", "5AT"], ["portInjection", "turbo"]), P("2.0T Aero B207R", 210, ["6MT", "5AT"], ["portInjection", "turbo"]), P("2.8 V6 Turbo B284L", 250, ["6MT", "6AT"], ["portInjection", "turbo"]), D("1.9 TiD Z19DT", 120, ["6MT", "6AT"]), D("1.9 TiD Z19DTH", 150, ["6MT", "6AT"])],
+      [2008, 2011, "9-3 II YS3F · restyling Sedan/SportCombi/Cabrio", P("1.8i Z18XE", 122, ["5MT"], ["portInjection"]), P("1.8t BioPower B207E", 150, ["6MT", "5AT"], ["portInjection", "turbo"]), P("2.0t BioPower B207L", 175, ["6MT", "5AT"], ["portInjection", "turbo"]), P("2.0T Aero B207R", 210, ["6MT", "5AT"], ["portInjection", "turbo"]), P("2.8 V6 Turbo Aero B284R", 280, ["6MT", "6AT"], ["portInjection", "turbo"]), P("2.8 V6 Turbo XWD Turbo X", 280, ["6MT", "6AT"], ["portInjection", "turbo"]), D("1.9 TiD Z19DT", 120, ["6MT", "6AT"]), D("1.9 TiD Z19DTH", 150, ["6MT", "6AT"]), D("1.9 TTiD Z19DTR", 180, ["6MT", "6AT"])],
+      [2010, 2011, "9-3X YS3F · XWD", P("2.0T B207R XWD", 210, ["6MT", "6AT"], ["portInjection", "turbo"]), P("2.0T BioPower XWD", 210, ["6MT", "6AT"], ["portInjection", "turbo"]), D("1.9 TTiD", 180, ["6MT", "6AT"])],
+      [2012, 2012, "9-3 II Griffin · fin de producción Saab", P("1.8t B207E", 150, ["6MT", "5AT"], ["portInjection", "turbo"]), P("2.0T B207R", 220, ["6MT", "6AT"], ["portInjection", "turbo"]), D("1.9 TTiD", 130, ["6MT", "6AT"]), D("1.9 TTiD", 160, ["6MT", "6AT"]), D("1.9 TTiD", 180, ["6MT", "6AT"])],
+      [2014, 2014, "9-3 Aero MY14 · NEVS", P("2.0T B207R", 220, ["6MT", "6AT"], ["portInjection", "turbo"])]]]
   ];
 
   const unique = values => [...new Set(values)];
@@ -170,12 +183,12 @@
     if (spec.fuel === "electric") return spec.extra;
     const base = spec.baseFuel || spec.fuel;
     const tech = base === "diesel" ? ["egr"] : ["lambda", "catalyst"];
-    if (base === "diesel" && /dCi|TDCi|CRDi|CDTI|EcoBlue|Blue dCi|Diesel/i.test(spec.engine)) tech.push("commonRail");
+    if (base === "diesel" && /dCi|TDCi|CRDi|CDTI|EcoBlue|Blue dCi|Diesel|TiD|TTiD/i.test(spec.engine)) tech.push("commonRail");
     if (base === "diesel" && !/SDI/i.test(spec.engine)) tech.push("turbo");
     // Solo se infieren tecnologías inequívocas por la denominación. DPF, SCR,
     // AdBlue, GPF y Start/Stop cambian por mercado/código de motor y deben
     // declararse expresamente en `extra` para no inventar equipamiento.
-    if (/TSI|TFSI|TCe|T-GDi|T-GDI|Turbo|EcoBoost|SIDI|\bFSI\b|\bGDi\b/i.test(spec.engine)) tech.push("directInjection");
+    if (/TSI|TFSI|TCe|T-GDi|T-GDI|EcoBoost|SIDI|\bFSI\b|\bGDi\b/i.test(spec.engine)) tech.push("directInjection");
     if (/TSI|TFSI|TCe|T-GDi|T-GDI|Turbo|EcoBoost|SIDI/i.test(spec.engine)) tech.push("turbo");
     if (/MPI|DPI|SCe|Duratec|Ti-VCT|Zetec|16V/i.test(spec.engine) && !/Turbo|T-GDi|TSI|TCe|EcoBoost|SIDI|FSI|GDi/i.test(spec.engine)) tech.push("portInjection");
     if (spec.fuel === "mhev") tech.push("mhsg");
