@@ -1,0 +1,13 @@
+{
+  "name": "motorclaro",
+  "version": "2.0.0",
+  "private": true,
+  "description": "PWA de orientación mecánica, garaje y mantenimiento",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check app.js && node --check catalog.js && node --check diagnosis-data.js && node --check sw.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

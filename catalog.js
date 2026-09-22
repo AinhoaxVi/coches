@@ -172,11 +172,12 @@
     const tech = base === "diesel" ? ["egr"] : ["lambda", "catalyst"];
     if (base === "diesel" && /dCi|TDCi|CRDi|CDTI|EcoBlue|Blue dCi|Diesel/i.test(spec.engine)) tech.push("commonRail");
     if (base === "diesel" && !/SDI/i.test(spec.engine)) tech.push("turbo");
-    if (base === "diesel" && (from >= 2011 || /Blue|EcoBlue/i.test(spec.engine))) tech.push("dpf");
-    if (base === "diesel" && from >= 2015 && /Blue|EcoBlue|TDI|CDTI|CRDi|dCi|Diesel/i.test(spec.engine)) tech.push("scr", "adblue");
-    if (/TSI|TFSI|TCe|T-GDi|T-GDI|Turbo|EcoBoost|SIDI/i.test(spec.engine)) tech.push("directInjection", "turbo");
-    if (/MPI|DPI|SCe|Duratec|Ti-VCT|Zetec|16V|FSI|GDi/i.test(spec.engine) && !/Turbo|T-GDi|TSI|TCe|EcoBoost|SIDI/i.test(spec.engine)) tech.push("portInjection");
-    if (base === "gasoline" && from >= 2018 && /TSI|TFSI|TCe|T-GDi|EcoBoost|Turbo/i.test(spec.engine)) tech.push("gpf");
+    // Solo se infieren tecnologías inequívocas por la denominación. DPF, SCR,
+    // AdBlue, GPF y Start/Stop cambian por mercado/código de motor y deben
+    // declararse expresamente en `extra` para no inventar equipamiento.
+    if (/TSI|TFSI|TCe|T-GDi|T-GDI|Turbo|EcoBoost|SIDI|\bFSI\b|\bGDi\b/i.test(spec.engine)) tech.push("directInjection");
+    if (/TSI|TFSI|TCe|T-GDi|T-GDI|Turbo|EcoBoost|SIDI/i.test(spec.engine)) tech.push("turbo");
+    if (/MPI|DPI|SCe|Duratec|Ti-VCT|Zetec|16V/i.test(spec.engine) && !/Turbo|T-GDi|TSI|TCe|EcoBoost|SIDI|FSI|GDi/i.test(spec.engine)) tech.push("portInjection");
     if (spec.fuel === "mhev") tech.push("mhsg");
     if (["hybrid", "phev"].includes(spec.fuel)) tech.push("tractionBattery");
     if (from >= 2011) tech.push("startStop");
@@ -186,7 +187,7 @@
   const variants = [];
   CATALOG.forEach(([brand, model, eras]) => eras.forEach(([from, to, generation, ...engines]) => {
     engines.forEach(spec => spec.boxes.forEach(box => {
-      const id = `${brand}-${model}-${from}-${spec.engine}-${spec.power}-${box}`.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const id = `${brand}-${model}-${from}-${generation}-${spec.engine}-${spec.power}-${box}`.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       variants.push({
         id, brand, model, years: [from, to], generation,
         engine: `${spec.engine} ${spec.power} CV`, power: spec.power,

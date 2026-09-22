@@ -1,0 +1,132 @@
+(function () {
+  const F = (name, systems, urgency, desc, checks, stop = false) => ({ name, systems, urgency, desc, checks, stop });
+
+  const faults = {
+    battery12: F("Batería de 12 V baja o deteriorada", ["all"], "media", "Puede faltar tensión para arrancar o alimentar las unidades electrónicas.", "Medir tensión en reposo y durante el arranque; revisar bornes y antigüedad."),
+    alternator: F("Alternador o circuito de carga", ["combustion"], "alta", "La batería podría no cargarse mientras el motor funciona.", "Medir tensión de carga, revisar correa, fusibles y conexiones."),
+    starter: F("Motor de arranque o solenoide", ["combustion"], "media", "Puede no accionar el motor con suficiente velocidad.", "Comprobar caída de tensión, señal de mando y consumo del motor de arranque."),
+    ignitionSwitch: F("Interruptor de encendido o autorización de arranque", ["all"], "media", "La llave, inmovilizador o pulsador puede no autorizar el arranque.", "Probar segunda llave y leer errores de inmovilizador/body control."),
+    ground: F("Masa, borne, fusible o conexión principal", ["all"], "alta", "Una conexión floja o sulfatada puede causar múltiples fallos intermitentes.", "Inspeccionar y medir caídas de tensión en masas y positivos principales."),
+    fuelPump: F("Bomba o presión de combustible", ["combustion"], "alta", "La presión o el caudal pueden ser insuficientes.", "Medir presión de baja/alta y comprobar alimentación de bomba."),
+    fuelFilter: F("Filtro de combustible obstruido", ["combustion"], "media", "Una restricción puede limitar caudal y potencia.", "Comprobar historial, presión antes/después y contaminación."),
+    injectors: F("Inyectores sucios, desequilibrados o defectuosos", ["combustion"], "media", "La dosificación desigual causa tirones, humo o ralentí irregular.", "Correcciones por cilindro, retorno, estanqueidad y patrón de inyección."),
+    coils: F("Bobinas o bujías", ["gasoline"], "alta", "Un fallo de encendido puede dañar el catalizador si se mantiene.", "Leer contadores de fallos, revisar bujías, bobinas y separación."),
+    glow: F("Calentadores o módulo de precalentamiento", ["diesel"], "baja", "Dificulta especialmente el arranque en frío.", "Medir resistencia/consumo de calentadores y señal del módulo."),
+    compression: F("Compresión baja o problema mecánico interno", ["combustion"], "alta", "Desgaste, válvulas o distribución pueden reducir la compresión.", "Prueba de compresión, fugas y sincronización mecánica."),
+    timing: F("Distribución fuera de punto o tensor", ["combustion"], "crítica", "Una cadena/correa o tensor defectuoso puede causar daños graves.", "No insistir si hay ruido metálico; comprobar sincronización y presión de aceite.", true),
+    maf: F("Caudalímetro o medición de aire", ["combustion"], "media", "Una lectura incorrecta altera mezcla y potencia.", "Comparar masa de aire real/objetivo y revisar contaminación o cableado."),
+    map: F("Sensor MAP o presión de admisión", ["combustion"], "media", "Una presión incoherente puede activar modo degradado.", "Comparar presión con contacto, ralentí y carga; revisar tubo/sensor."),
+    intakeLeak: F("Fuga de admisión o vacío", ["combustion"], "media", "Aire no medido puede provocar mezcla pobre y ralentí inestable.", "Prueba de humo y revisión de manguitos, PCV y juntas."),
+    throttle: F("Cuerpo de mariposa o pedal electrónico", ["gasoline", "hybrid", "phev"], "alta", "La señal de mariposa/pedal puede limitar la aceleración.", "Comparar señales redundantes, limpiar/adaptar y revisar cableado."),
+    turboLeak: F("Fuga de presión en turbo/intercooler", ["turbo"], "alta", "Un manguito o intercooler puede perder presión.", "Prueba de estanqueidad, presión solicitada/real y restos de aceite."),
+    turboActuator: F("Actuador o geometría del turbo", ["turbo"], "alta", "La regulación de sobrealimentación puede atascarse.", "Probar actuador, vacío, electroválvula y posición real."),
+    turboWear: F("Desgaste del turbo", ["turbo"], "crítica", "Holgura o fuga de aceite puede producir humo y riesgo de avería mayor.", "Detener si hay humo azul intenso o consumo súbito de aceite; revisar holgura y lubricación.", true),
+    egr: F("EGR sucia, bloqueada o con posición incoherente", ["diesel"], "media", "Altera la admisión y puede causar tirones o humo.", "Comparar posición solicitada/real y revisar carbonilla."),
+    dpf: F("DPF saturado o regeneración incompleta", ["dpf", "diesel"], "alta", "La contrapresión puede activar modo degradado.", "Medir presión diferencial, carga calculada, sensores y causa de la saturación."),
+    gpf: F("GPF saturado", ["gpf"], "media", "Los trayectos cortos pueden impedir la regeneración.", "Revisar carga calculada, presión y estrategia de regeneración."),
+    adblue: F("Sistema AdBlue/SCR", ["adblue"], "alta", "Nivel, cristalización, inyector o sensores NOx pueden generar cuenta atrás de arranque.", "Leer códigos SCR, calidad/nivel, presión, inyector y sensores NOx."),
+    oxygen: F("Sonda lambda o control de mezcla", ["gasoline", "hybrid", "phev"], "media", "Una lectura incorrecta aumenta consumo y emisiones.", "Revisar respuesta de sondas, fuel trims, fugas de escape y cableado."),
+    catalyst: F("Catalizador deteriorado u obstruido", ["combustion"], "alta", "Puede perder eficacia o restringir el escape.", "Comparar sondas, temperatura y contrapresión; resolver antes fallos de encendido."),
+    evap: F("Sistema EVAP o tapón de combustible", ["gasoline", "hybrid", "phev"], "baja", "Una fuga de vapores puede encender el testigo motor.", "Comprobar tapón, válvula de purga y prueba de humo EVAP."),
+    coolantLeak: F("Fuga de refrigerante", ["all"], "crítica", "La pérdida puede causar sobrecalentamiento y daños graves.", "No abrir en caliente; localizar fuga y comprobar presión del circuito.", true),
+    thermostat: F("Termostato atascado", ["all"], "alta", "Puede impedir la circulación correcta o retrasar el calentamiento.", "Comparar temperaturas de manguitos y datos del sensor."),
+    waterPump: F("Bomba de agua o circulación insuficiente", ["all"], "crítica", "La falta de circulación puede sobrecalentar rápidamente.", "Detener si sube la temperatura; comprobar caudal, bomba y correa.", true),
+    coolingFan: F("Electroventilador, relé o control", ["all"], "alta", "Suele causar temperatura alta en ciudad o parado.", "Activación con diagnosis, fusibles, relés, módulo y consumo del ventilador."),
+    headGasket: F("Junta de culata o fuga interna", ["combustion"], "crítica", "Puede mezclar gases, aceite y refrigerante.", "No circular si se calienta; prueba de CO₂, presión, compresión y fugas.", true),
+    oilLevel: F("Nivel o presión de aceite insuficiente", ["combustion"], "crítica", "Circular sin presión puede destruir el motor.", "Apagar inmediatamente con testigo rojo; comprobar nivel y presión real.", true),
+    oilLeak: F("Fuga de aceite de motor", ["combustion"], "alta", "Puede reducir el nivel o alcanzar zonas calientes.", "Comprobar nivel, limpiar y localizar origen sin circular si cae rápido."),
+    pcv: F("Ventilación del cárter/PCV", ["combustion"], "media", "Puede causar consumo de aceite, silbidos o mezcla incorrecta.", "Revisar vacío, membrana, tubos y presión del cárter."),
+    mounts: F("Soportes de motor o cambio", ["all"], "media", "Un soporte cedido transmite golpes y vibración.", "Inspección bajo carga controlada y revisión de silentblocks."),
+    clutch: F("Embrague desgastado", ["manual"], "media", "Puede patinar, vibrar o dificultar los cambios.", "Prueba de deslizamiento, punto de fricción y estado hidráulico."),
+    flywheel: F("Volante bimasa", ["manual"], "alta", "Puede producir traqueteo, golpes o vibración.", "Escuchar al arrancar/parar y medir holgura al desmontar."),
+    clutchHydraulic: F("Bomba o bombín de embrague", ["manual"], "alta", "Puede impedir desembragar y seleccionar marchas.", "Comprobar nivel, fugas, recorrido y presión hidráulica."),
+    gearboxOil: F("Aceite de transmisión bajo o degradado", ["manual", "automatic"], "alta", "Nivel o fluido incorrectos empeoran cambios y temperatura.", "Comprobar fugas, nivel y especificación siguiendo el procedimiento del fabricante."),
+    dctClutch: F("Embragues DCT/DSG", ["dct"], "media", "Desgaste o adaptación incorrecta causa temblores.", "Leer desgaste/adaptaciones, temperatura y errores de embrague."),
+    mechatronic: F("Mecatrónica o actuador de cambio", ["dct", "automatic"], "alta", "Puede dejar la caja en emergencia o sin selección.", "Leer códigos, presión, actuadores, alimentación y software."),
+    torqueConverter: F("Convertidor de par o bloqueo", ["automatic"], "alta", "Puede generar resbalamiento o vibración a velocidad estable.", "Comparar RPM de entrada/salida, slip y estado del ATF."),
+    cvJoint: F("Junta homocinética o palier", ["all"], "alta", "Suele chasquear al girar o vibrar al acelerar.", "Revisar fuelles, holgura y equilibrado del palier."),
+    wheelBearing: F("Rodamiento de rueda", ["all"], "alta", "Produce zumbido creciente y puede adquirir holgura.", "Elevar, comprobar holgura/ruido y comparar temperatura."),
+    tyre: F("Neumático dañado, deformado o con presión incorrecta", ["all"], "crítica", "Puede causar vibración, desvío o pérdida de control.", "Detener ante bulto/corte; revisar presión, banda y fecha.", true),
+    balance: F("Equilibrado o llanta deformada", ["all"], "media", "Suele vibrar en un rango concreto de velocidad.", "Equilibrar y medir descentramiento de llanta/neumático."),
+    alignment: F("Alineación fuera de tolerancia", ["all"], "media", "Provoca desvío y desgaste irregular.", "Comprobar presiones, holguras y alineación completa."),
+    shock: F("Amortiguador o copela", ["all"], "alta", "Reduce estabilidad y puede golpear en baches.", "Inspeccionar fugas, rebote, copelas y fijaciones."),
+    controlArm: F("Silentblock, rótula o brazo de suspensión", ["all"], "alta", "Una holgura altera dirección y frenada.", "Revisar con palanca y comprobar geometría."),
+    steeringJoint: F("Rótula o terminal de dirección", ["all"], "crítica", "Una holgura importante compromete el control.", "No circular con dirección imprecisa; revisar terminales y cremallera.", true),
+    eps: F("Dirección asistida eléctrica", ["all"], "alta", "Puede perder asistencia o endurecer el volante.", "Leer EPS, batería/alternador, sensor de par y motor de asistencia."),
+    brakePads: F("Pastillas de freno desgastadas", ["all"], "alta", "Puede aumentar distancia de frenado y dañar discos.", "Medir espesor interior/exterior y revisar avisador."),
+    brakeDiscs: F("Discos deformados o gastados", ["all"], "alta", "Pueden causar vibración y frenada irregular.", "Medir espesor, alabeo y superficie."),
+    brakeFluid: F("Líquido de frenos bajo, viejo o con aire", ["all"], "crítica", "Un pedal blando puede indicar fuga o aire en el circuito.", "No circular si pierde presión; revisar fugas, nivel y purgado.", true),
+    brakeCaliper: F("Pinza de freno agarrotada", ["all"], "crítica", "Puede recalentar una rueda y desviar el coche.", "Detener ante olor/calor; revisar guías, pistón y latiguillo.", true),
+    absSensor: F("Sensor ABS o aro reluctor", ["all"], "alta", "Puede desactivar ABS y estabilidad.", "Comparar velocidades de rueda y revisar cableado/aro."),
+    booster: F("Servofreno o bomba de vacío", ["all"], "crítica", "El pedal puede endurecerse y aumentar mucho la distancia de frenado.", "No circular si falta asistencia; revisar vacío, válvula y servo.", true),
+    acGas: F("Carga baja o fuga de refrigerante A/C", ["all"], "baja", "El circuito puede no generar presión suficiente.", "Medir presiones, temperatura y localizar fuga; no rellenar sin reparar."),
+    acCompressor: F("Compresor o control del A/C", ["all"], "media", "Puede no acoplar o no comprimir correctamente.", "Comprobar demanda, presión, alimentación y ruido."),
+    blower: F("Ventilador interior o regulador", ["all"], "baja", "Puede impedir el flujo de aire.", "Probar velocidades, fusible, resistencia/módulo y motor."),
+    cabinFilter: F("Filtro de habitáculo saturado", ["all"], "baja", "Reduce caudal y favorece olores o vaho.", "Inspeccionar y sustituir si está obstruido."),
+    condensate: F("Condensación normal del aire acondicionado", ["all"], "informativa", "Agua transparente, sin olor, tras usar el A/C suele ser normal.", "Confirmar que es agua limpia y que cesa después; vigilar niveles."),
+    fuelLeak: F("Fuga de combustible", ["combustion"], "crítica", "Existe riesgo de incendio.", "Apagar, alejar fuentes de ignición y pedir asistencia; no volver a arrancar.", true),
+    exhaustLeak: F("Fuga de escape", ["combustion"], "alta", "Puede introducir gases en el habitáculo y alterar sensores.", "No permanecer dentro con olor; revisar colector, juntas y flexo."),
+    hvBattery: F("Batería de tracción o aislamiento de alta tensión", ["electric", "hybrid", "phev"], "crítica", "El sistema de alta tensión requiere personal cualificado.", "No manipular conectores naranjas; inmovilizar ante aviso rojo, humo u olor.", true),
+    inverter: F("Inversor, convertidor o electrónica de potencia", ["electric", "hybrid", "phev"], "alta", "Puede limitar o impedir la tracción.", "Leer códigos HV, refrigeración, aislamiento y alimentación de 12 V."),
+    tractionMotor: F("Motor eléctrico o resolver", ["electric", "hybrid", "phev"], "alta", "Puede causar pérdida de tracción o ruido anormal.", "Diagnóstico HV especializado, aislamiento y señales del resolver."),
+    charger: F("Cargador embarcado o puerto de carga", ["electric", "phev"], "media", "Puede impedir la carga AC.", "Probar otro punto/cable, revisar bloqueo, LEDs y códigos del cargador."),
+    battery48: F("Batería de 48 V o gestión MHEV", ["mhev48"], "alta", "Puede limitar Start/Stop y asistencia eléctrica.", "Leer estado de carga, errores, temperatura y conexiones."),
+    dcDc: F("Convertidor DC/DC", ["dcDc", "electric", "hybrid", "phev"], "alta", "Puede dejar sin alimentación la red de 12 V.", "Medir tensión de 12 V con sistema listo y leer códigos."),
+    mhsg: F("Motor-generador MHSG, correa o tensor", ["mhsg"], "alta", "Afecta carga, arranque y asistencia de 48 V.", "Inspeccionar correa/tensor y leer valores del generador."),
+    tpms: F("Sensor TPMS o presión de neumáticos", ["all"], "alta", "Puede ser presión real baja o fallo de sensor.", "Medir en frío las cuatro ruedas y recalibrar solo tras corregir."),
+    genericSensor: F("Sensor, cableado o unidad de control", ["all"], "media", "Hace falta lectura de códigos y datos en vivo para acotar.", "Registrar códigos antes de borrarlos y revisar alimentación/cableado."),
+    software: F("Software, adaptación o comunicación entre unidades", ["all"], "media", "Una actualización o adaptación puede ser necesaria tras descartar hardware.", "Escaneo completo, tensión estable, boletines técnicos y versiones de software.")
+  };
+
+  const symptoms = [
+    ["start", "No arranca o arranca mal", "Arranque"], ["power", "Pierde potencia o da tirones", "Potencia"],
+    ["warning", "Testigo o mensaje", "Avisos"], ["smoke", "Humo u olor", "Humo"],
+    ["heat", "Temperatura alta", "Temperatura"], ["noise", "Ruido o vibración", "Ruidos"],
+    ["braking", "Frenos", "Frenos"], ["steering", "Dirección o suspensión", "Dirección"],
+    ["climate", "Climatización", "Clima"], ["leak", "Fuga o mancha", "Fugas"],
+    ["gearbox", "Cambio o embrague", "Cambio"], ["electric", "Sistema eléctrico, híbrido o carga", "Eléctrico"],
+    ["consumption", "Consume demasiado", "Consumo"], ["inspection", "Revisión preventiva", "Revisión"]
+  ].map(([id, label, short]) => ({ id, label, short }));
+
+  // Cada respuesta suma y también puede restar. Las preguntas se filtran por
+  // sistema y se muestran de forma progresiva para no enseñar opciones absurdas.
+  const q = (id, symptom, text, answers, systems = ["all"], required = true) => ({ id, symptom, text, answers, systems, required });
+  const A = (label, scores = {}, flags = []) => ({ label, scores, flags });
+  const questions = [
+    q("start-action", "start", "¿Qué hace exactamente al intentar arrancar?", [A("No hace nada", { battery12:4, ignitionSwitch:4, ground:3 }), A("Solo un clic", { battery12:4, starter:6, ground:2 }), A("Gira lento", { battery12:7, starter:3, ground:2 }), A("Gira normal, pero no arranca", { fuelPump:5, coils:4, glow:3, compression:2 }), A("Arranca y se para", { fuelPump:3, ignitionSwitch:3, maf:2, throttle:2 })]),
+    q("start-lights", "start", "¿Las luces se atenúan mucho?", [A("Sí", { battery12:6, ground:3, starter:2 }), A("No", { starter:2, ignitionSwitch:2, fuelPump:2 }), A("No lo sé")]),
+    q("start-temp", "start", "¿Ocurre sobre todo en frío?", [A("Sí", { glow:6, battery12:2, injectors:2 }), A("Sobre todo en caliente", { starter:3, fuelPump:3, compression:2 }), A("Siempre", { ignitionSwitch:2, fuelPump:2 }), A("Primera vez")]),
+    q("start-noise", "start", "¿Hay ruido metálico de cadena o golpes?", [A("Sí", { timing:10 }, ["critical"]), A("No"), A("No estoy segura")], ["combustion"]),
+    q("power-when", "power", "¿Cuándo pierde potencia?", [A("Al acelerar fuerte", { turboLeak:6, turboActuator:5, fuelPump:3, coils:3 }), A("A bajas vueltas", { egr:5, intakeLeak:3, coils:3 }), A("Todo el tiempo", { dpf:5, maf:4, catalyst:3, compression:2 }), A("Solo a veces", { genericSensor:3, coils:3, software:2 })]),
+    q("power-tirones", "power", "¿Cómo son los tirones?", [A("Fuertes y parpadea motor", { coils:9, injectors:5 }, ["critical"]), A("Fuertes sin testigo", { coils:5, injectors:5, fuelPump:3 }), A("Suaves", { egr:3, maf:3, oxygen:2 }), A("No hay tirones", { turboLeak:3, dpf:3 })]),
+    q("power-rpm", "power", "¿Suben las RPM sin ganar velocidad?", [A("Sí", { clutch:8, dctClutch:7, torqueConverter:6 }), A("No", { turboLeak:2, fuelPump:2 }), A("No lo sé")]),
+    q("warning-type", "warning", "¿Qué aviso aparece?", [A("Aceite rojo", { oilLevel:12 }, ["critical"]), A("Temperatura roja", { coolantLeak:8, waterPump:8, coolingFan:5 }, ["critical"]), A("Batería", { alternator:8, dcDc:7, battery12:3 }), A("Motor amarillo fijo", { genericSensor:4, oxygen:3, egr:3 }), A("Motor parpadeando", { coils:10, injectors:5 }, ["critical"]), A("Frenos/ABS", { brakeFluid:8, absSensor:6 }, ["critical"]), A("Dirección", { eps:8 }), A("Híbrido/EV", { hvBattery:8, inverter:6 }, ["critical"])]),
+    q("warning-limp", "warning", "¿Ha entrado en modo limitado o no acelera?", [A("Sí", { dpf:4, turboActuator:4, throttle:4, inverter:4 }), A("No"), A("No lo sé")]),
+    q("smoke-colour", "smoke", "¿De qué color es el humo?", [A("Negro", { egr:6, injectors:5, maf:4, dpf:3 }), A("Azul", { turboWear:9, pcv:5, oilLevel:3 }, ["critical"]), A("Blanco denso y persistente", { headGasket:9, coolantLeak:6, injectors:3 }, ["critical"]), A("Vapor leve solo en frío", {}), A("No hay humo, solo olor", { fuelLeak:5, exhaustLeak:5, brakeCaliper:3 })], ["combustion"]),
+    q("smoke-smell", "smoke", "¿A qué huele?", [A("Combustible", { fuelLeak:9, injectors:4 }, ["critical"]), A("Aceite quemado", { oilLeak:6, turboWear:5 }), A("Dulce/refrigerante", { coolantLeak:8, headGasket:6 }, ["critical"]), A("Plástico o cable", { ground:6, dcDc:5 }, ["critical"]), A("Escape dentro", { exhaustLeak:9 }, ["critical"]), A("No lo sé")]),
+    q("heat-where", "heat", "¿Cuánto sube la temperatura?", [A("Zona roja o aviso de parar", { coolantLeak:8, waterPump:8, thermostat:6, coolingFan:5 }, ["critical"]), A("Más de lo normal", { thermostat:5, coolingFan:4, coolantLeak:3 }), A("Solo aparece un aviso", { genericSensor:4, coolantLeak:3 })]),
+    q("heat-city", "heat", "¿Pasa principalmente parado o en ciudad?", [A("Sí", { coolingFan:8, coolantLeak:3 }), A("También en carretera", { waterPump:6, thermostat:6, coolantLeak:5 }), A("No lo sé")]),
+    q("heat-heater", "heat", "¿La calefacción deja de calentar?", [A("Sí", { coolantLeak:7, waterPump:5 }), A("No", { thermostat:3, coolingFan:2 }), A("No lo he probado")]),
+    q("noise-when", "noise", "¿Cuándo aparece?", [A("Al frenar", { brakePads:7, brakeDiscs:6 }), A("A cierta velocidad", { balance:6, wheelBearing:5, tyre:4 }), A("Al girar", { cvJoint:6, steeringJoint:5, wheelBearing:4 }), A("En baches", { shock:6, controlArm:6 }), A("Al ralentí", { mounts:5, injectors:3, flywheel:3 }), A("Al arrancar/parar", { flywheel:6, timing:5, mounts:4 })]),
+    q("noise-speed", "noise", "¿Empeora al aumentar la velocidad?", [A("Sí", { wheelBearing:5, balance:5, tyre:4 }), A("No", { mounts:3, flywheel:3 }), A("Solo al frenar", { brakeDiscs:7 })]),
+    q("brake-feel", "braking", "¿Qué notas en el pedal o la frenada?", [A("Pedal blando o se hunde", { brakeFluid:10 }, ["critical"]), A("Pedal muy duro", { booster:10 }, ["critical"]), A("Vibra", { brakeDiscs:8, controlArm:3 }), A("Chirrido/roce", { brakePads:8, brakeDiscs:4 }), A("Se desvía", { brakeCaliper:7, tyre:4, alignment:3 })]),
+    q("brake-hot", "braking", "¿Alguna rueda huele a quemado o está mucho más caliente?", [A("Sí", { brakeCaliper:12 }, ["critical"]), A("No"), A("No lo he comprobado")]),
+    q("steer-main", "steering", "¿Cuál es el problema principal?", [A("Volante duro", { eps:8, tyre:4 }), A("Se desvía", { alignment:7, tyre:6, brakeCaliper:3 }), A("Golpes u holgura", { steeringJoint:8, controlArm:6 }), A("Rebota o flota", { shock:8, tyre:4 }), A("Chasquido al girar", { cvJoint:9 })]),
+    q("climate-main", "climate", "¿Qué hace la climatización?", [A("Sale aire pero no enfría", { acGas:7, acCompressor:5 }), A("No sale aire", { blower:8, ground:3 }), A("Sale poco", { cabinFilter:8, blower:3 }), A("Un lado no regula", { genericSensor:5 }), A("Huele mal o empaña", { cabinFilter:6, acGas:2 })]),
+    q("leak-colour", "leak", "¿Cómo es la mancha?", [A("Agua transparente sin olor", { condensate:7 }), A("Verde/rosa/amarilla", { coolantLeak:10 }, ["critical"]), A("Negra o marrón", { oilLeak:8, gearboxOil:3 }), A("Aceitosa cerca de una rueda", { brakeFluid:9, shock:5 }, ["critical"]), A("Huele a combustible", { fuelLeak:12 }, ["critical"])]),
+    q("leak-ac", "leak", "¿Aparece solo después de usar el aire acondicionado?", [A("Sí y es agua limpia", { condensate:10, acGas:-4 }), A("No", { condensate:-3 }), A("No lo sé")]),
+    q("gear-main", "gearbox", "¿Qué ocurre con el cambio?", [A("Patina al acelerar", { clutch:9, dctClutch:8, torqueConverter:6 }), A("No entra una marcha", { clutchHydraulic:8, mechatronic:8, gearboxOil:4 }), A("Golpea al cambiar", { mechatronic:7, gearboxOil:5, mounts:4 }), A("Tiembla al iniciar", { dctClutch:8, clutch:7, mounts:4 }), A("Hace ruido", { gearboxOil:6, flywheel:5 })]),
+    q("gear-temp", "gearbox", "¿Cambia con la temperatura?", [A("Peor en frío", { gearboxOil:6, clutchHydraulic:3 }), A("Peor en caliente", { dctClutch:5, mechatronic:5, clutch:3 }), A("Siempre", { mechatronic:3, gearboxOil:3 })]),
+    q("electric-main", "electric", "¿Qué sistema falla?", [A("12 V / varios testigos", { battery12:7, ground:6, dcDc:5 }), A("48 V", { battery48:8, mhsg:6, dcDc:5 }), A("No carga enchufado", { charger:9, battery12:3 }), A("Aviso de alta tensión", { hvBattery:10, inverter:7 }, ["critical"]), A("Pierde tracción", { inverter:7, tractionMotor:7, hvBattery:5 }), A("Start/Stop no funciona", { battery12:5, battery48:4, genericSensor:2 })]),
+    q("electric-smell", "electric", "¿Hay humo, calor fuerte, chasquidos u olor químico?", [A("Sí", { hvBattery:14, ground:6 }, ["critical"]), A("No"), A("No lo sé")], ["all"]),
+    q("consumption-type", "consumption", "¿Qué ha aumentado?", [A("Combustible", { oxygen:6, maf:4, injectors:4, thermostat:3 }), A("Aceite", { pcv:6, turboWear:6, oilLeak:5 }), A("Refrigerante", { coolantLeak:9, headGasket:7 }, ["critical"]), A("Electricidad/autonomía", { tyre:4, hvBattery:6, brakeCaliper:3 })]),
+    q("common-obd", "all", "¿Tienes algún código OBD/DTC?", [A("Sí, lo añadiré", { genericSensor:2 }), A("No"), A("No sé qué es")], ["all"], false),
+    q("common-recent", "all", "¿Empezó después de una reparación, golpe, batería descargada o repostaje?", [A("Después de reparar", { ground:3, software:3, intakeLeak:2 }), A("Después de un golpe/bache", { tyre:4, controlArm:3, ground:2 }), A("Después de batería descargada", { battery12:4, software:4 }), A("Después de repostar", { fuelPump:3, injectors:2, evap:3 }), A("No")], ["all"], false)
+  ];
+
+  const genericObd = {
+    P0100:"Circuito del caudalímetro",P0101:"Rango/rendimiento del caudalímetro",P0115:"Circuito de temperatura de refrigerante",P0120:"Circuito de mariposa/pedal",P0171:"Mezcla pobre banco 1",P0172:"Mezcla rica banco 1",P0191:"Rango del sensor de presión de combustible",P0201:"Circuito inyector cilindro 1",P0299:"Presión de turbo insuficiente",P0300:"Fallos de encendido aleatorios",P0301:"Fallo de encendido cilindro 1",P0302:"Fallo de encendido cilindro 2",P0303:"Fallo de encendido cilindro 3",P0304:"Fallo de encendido cilindro 4",P0325:"Circuito del sensor de picado",P0335:"Sensor de cigüeñal",P0340:"Sensor de árbol de levas",P0401:"Flujo EGR insuficiente",P0420:"Eficiencia del catalizador baja",P0442:"Fuga pequeña EVAP",P0455:"Fuga grande EVAP",P0500:"Sensor de velocidad del vehículo",P0562:"Tensión del sistema baja",P0700:"Avería solicitada por control de transmisión",P2002:"Eficiencia DPF baja",P2453:"Sensor de presión diferencial DPF",P2463:"Acumulación de hollín en DPF",P2504:"Tensión del sistema de carga alta",P20E8:"Presión de AdBlue/SCR baja",B1200:"Código de carrocería dependiente del fabricante",C0035:"Sensor de velocidad de rueda",C1091:"Código de chasis dependiente del fabricante",U0100:"Comunicación perdida con ECU/PCM",U0121:"Comunicación perdida con ABS",U1000:"Fallo de comunicación dependiente del fabricante"
+  };
+
+  globalThis.MOTORCLARO_DIAG = { faults, symptoms, questions, genericObd };
+})();

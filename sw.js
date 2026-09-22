@@ -1,5 +1,6 @@
-const CACHE = "motorclaro-v5";
-const ASSETS = ["./", "./index.html", "./styles.css", "./catalog.js?v=5", "./app.js?v=5", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
+const CACHE = "motorclaro-v8";
+const OFFLINE_PAGE = "./index.html";
+const ASSETS = ["./", OFFLINE_PAGE, "./styles.css?v=8", "./catalog.js?v=8", "./diagnosis-data.js?v=8", "./app.js?v=8", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
@@ -11,11 +12,25 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
+self.addEventListener("message", event => {
+  if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+});
+
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
-  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-    const copy = response.clone();
-    caches.open(CACHE).then(cache => cache.put(event.request, copy));
-    return response;
-  }).catch(() => caches.match("./index.html"))));
+  if (event.request.mode === "navigate") {
+    event.respondWith(fetch(event.request).then(response => {
+      const copy = response.clone();
+      caches.open(CACHE).then(cache => cache.put(OFFLINE_PAGE, copy));
+      return response;
+    }).catch(() => caches.match(OFFLINE_PAGE)));
+    return;
+  }
+  event.respondWith(caches.match(event.request).then(cached => {
+    const fresh = fetch(event.request).then(response => {
+      if (response.ok) caches.open(CACHE).then(cache => cache.put(event.request, response.clone()));
+      return response;
+    });
+    return cached || fresh;
+  }));
 });
