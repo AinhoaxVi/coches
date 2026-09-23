@@ -6,18 +6,32 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const read = file => fs.readFileSync(path.join(root, file), "utf8");
 
-test("index carga todos los recursos versionados", () => {
+const versionedAssets = ["styles.css", "catalog.js", "diagnosis-data.js", "maintenance-data.js", "app.js"];
+
+test("index y service worker usan la misma versión para todos los recursos", () => {
   const html = read("index.html");
-  for (const asset of ["styles.css?v=9", "catalog.js?v=9", "diagnosis-data.js?v=9", "maintenance-data.js?v=9", "app.js?v=9"]) {
-    assert.match(html, new RegExp(asset.replace("?", "\\?")));
+  const sw = read("sw.js");
+  const versions = new Set();
+  for (const asset of versionedAssets) {
+    const match = html.match(new RegExp(`${asset.replace(".", "\\.")}\\?v=(\\d+)`));
+    assert.ok(match, `${asset} no está versionado en index.html`);
+    versions.add(match[1]);
+    assert.ok(sw.includes(`${asset}?v=${match[1]}`), `${asset} no está precacheado con la misma versión`);
   }
+  assert.equal(versions.size, 1, "los recursos de index.html tienen versiones distintas");
 });
 
 test("el service worker precachea los recursos críticos y permite actualizar", () => {
   const sw = read("sw.js");
-  for (const asset of ["styles.css?v=9", "catalog.js?v=9", "diagnosis-data.js?v=9", "maintenance-data.js?v=9", "app.js?v=9"]) assert.ok(sw.includes(asset));
   assert.ok(sw.includes("SKIP_WAITING"));
   assert.ok(sw.includes('event.request.mode === "navigate"'));
+});
+
+test("Diagnosticar ofrece acceso directo por código OBD", () => {
+  const app = read("app.js");
+  assert.ok(app.includes('id="obdDirectForm"'));
+  assert.ok(app.includes('symptom:"obd"'));
+  assert.ok(app.includes("Diagnóstico por código OBD"));
 });
 
 test("el manifiesto es JSON válido y tiene iconos instalables", () => {
