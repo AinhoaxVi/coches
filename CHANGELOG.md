@@ -1,5 +1,11 @@
 # Historial de cambios
 
+## 2.2.0 — 2026-09-23
+
+- Añadido diagnóstico directo por código OBD en la pantalla Diagnosticar, sin pasar por el cuestionario de síntomas.
+- Sincronizada automáticamente la versión de todos los recursos entre `index.html`, las pruebas y el precache del service worker.
+- Actualizadas las pruebas del catálogo para validar las 725 variantes actuales y la cobertura específica del Saab 9-3.
+
 ## 2.1.0 — 2026-09-22
 
 - Añadidas 92 configuraciones del Saab 9-3 entre 1998 y 2014: YS3D, YS3F, Sedan, SportCombi, Cabrio, Viggen, 9-3X, Griffin y NEVS.
