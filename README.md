@@ -10,6 +10,7 @@ Aplicación publicada: <https://ainhoaxvi.github.io/coches/>
 - Catálogo local de 725 variantes de 27 modelos europeos y 7 marcas, con generaciones, combustible, potencia, cambio y sistemas confirmados. Incluye 92 configuraciones del Saab 9-3 (1998-2014), con YS3D, YS3F, Cabrio, SportCombi, Viggen, 9-3X y NEVS.
 - 14 grupos de síntomas, 29 preguntas adaptativas y 74 causas de avería compatibles con gasolina, diésel, híbridos, eléctricos, transmisiones y sistemas de seguridad.
 - Formulario previo detallado: gravedad, frecuencia, aparición, temperatura/uso, códigos OBD, señales de emergencia y texto libre.
+- Diagnóstico directo por uno o varios códigos OBD desde la pantalla Diagnosticar, sin completar el cuestionario de síntomas.
 - Diccionario integrado de 35 códigos OBD frecuentes y clasificación de coincidencia sin porcentajes engañosos.
 - Triaje explícito para frenos, temperatura, aceite, combustible y alta tensión.
 - Plan de mantenimiento por versión: intervalos exactos solo en perfiles documentados y lista compatible sin plazos inventados para el resto, con coste, taller, notas e historial.

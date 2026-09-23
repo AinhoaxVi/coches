@@ -35,3 +35,11 @@ test("cada causa tiene prioridad, explicación y comprobación", () => {
 test("los códigos OBD genéricos tienen un formato válido", () => {
   for (const code of Object.keys(data.genericObd)) assert.match(code, /^[PBCU][0-9A-F]{4}$/);
 });
+
+test("cada código OBD conocido puntúa causas compatibles", () => {
+  assert.deepEqual(new Set(Object.keys(data.obdScores)), new Set(Object.keys(data.genericObd)));
+  for (const [code, scores] of Object.entries(data.obdScores)) {
+    assert.ok(Object.keys(scores).length > 0, code);
+    for (const faultId of Object.keys(scores)) assert.ok(data.faults[faultId], `${code} referencia ${faultId}`);
+  }
+});

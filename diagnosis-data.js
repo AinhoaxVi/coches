@@ -128,5 +128,15 @@
     P0100:"Circuito del caudalímetro",P0101:"Rango/rendimiento del caudalímetro",P0115:"Circuito de temperatura de refrigerante",P0120:"Circuito de mariposa/pedal",P0171:"Mezcla pobre banco 1",P0172:"Mezcla rica banco 1",P0191:"Rango del sensor de presión de combustible",P0201:"Circuito inyector cilindro 1",P0299:"Presión de turbo insuficiente",P0300:"Fallos de encendido aleatorios",P0301:"Fallo de encendido cilindro 1",P0302:"Fallo de encendido cilindro 2",P0303:"Fallo de encendido cilindro 3",P0304:"Fallo de encendido cilindro 4",P0325:"Circuito del sensor de picado",P0335:"Sensor de cigüeñal",P0340:"Sensor de árbol de levas",P0401:"Flujo EGR insuficiente",P0420:"Eficiencia del catalizador baja",P0442:"Fuga pequeña EVAP",P0455:"Fuga grande EVAP",P0500:"Sensor de velocidad del vehículo",P0562:"Tensión del sistema baja",P0700:"Avería solicitada por control de transmisión",P2002:"Eficiencia DPF baja",P2453:"Sensor de presión diferencial DPF",P2463:"Acumulación de hollín en DPF",P2504:"Tensión del sistema de carga alta",P20E8:"Presión de AdBlue/SCR baja",B1200:"Código de carrocería dependiente del fabricante",C0035:"Sensor de velocidad de rueda",C1091:"Código de chasis dependiente del fabricante",U0100:"Comunicación perdida con ECU/PCM",U0121:"Comunicación perdida con ABS",U1000:"Fallo de comunicación dependiente del fabricante"
   };
 
-  globalThis.MOTORCLARO_DIAG = { faults, symptoms, questions, genericObd };
+  const obdScores = {
+    P0100:{maf:12,genericSensor:4},P0101:{maf:12,intakeLeak:4},P0115:{genericSensor:10,thermostat:3},P0120:{throttle:12,genericSensor:4},
+    P0171:{intakeLeak:10,maf:7,oxygen:5,fuelPump:3},P0172:{injectors:8,maf:6,oxygen:5},P0191:{fuelPump:10,injectors:5,genericSensor:4},P0201:{injectors:12,genericSensor:4},
+    P0299:{turboLeak:12,turboActuator:8,turboWear:3},P0300:{coils:12,injectors:7,compression:4},P0301:{coils:12,injectors:7,compression:4},P0302:{coils:12,injectors:7,compression:4},P0303:{coils:12,injectors:7,compression:4},P0304:{coils:12,injectors:7,compression:4},
+    P0325:{genericSensor:10,coils:3},P0335:{genericSensor:10,timing:5},P0340:{genericSensor:10,timing:5},P0401:{egr:12,genericSensor:4},P0420:{catalyst:12,oxygen:5,exhaustLeak:3},
+    P0442:{evap:12},P0455:{evap:12},P0500:{absSensor:9,genericSensor:5},P0562:{battery12:12,alternator:8,ground:6},P0700:{mechatronic:9,gearboxOil:5,software:4},
+    P2002:{dpf:12},P2453:{dpf:10,genericSensor:5},P2463:{dpf:12},P2504:{alternator:12,battery12:6,ground:4},P20E8:{adblue:12},
+    B1200:{genericSensor:8},C0035:{absSensor:12},C1091:{absSensor:6,genericSensor:6},U0100:{software:10,ground:7,battery12:5},U0121:{software:9,absSensor:7,ground:5},U1000:{software:10,ground:6,battery12:4}
+  };
+
+  globalThis.MOTORCLARO_DIAG = { faults, symptoms, questions, genericObd, obdScores };
 })();
