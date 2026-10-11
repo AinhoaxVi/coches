@@ -1,6 +1,6 @@
-const CACHE = "motorclaro-v10";
+const CACHE = "motorclaro-v11";
 const OFFLINE_PAGE = "./index.html";
-const ASSETS = ["./", OFFLINE_PAGE, "./styles.css?v=10", "./catalog.js?v=10", "./diagnosis-data.js?v=10", "./maintenance-data.js?v=10", "./app.js?v=10", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
+const ASSETS = ["./", OFFLINE_PAGE, "./styles.css?v=11", "./catalog.js?v=11", "./diagnosis-data.js?v=11", "./maintenance-data.js?v=11", "./app.js?v=11", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));

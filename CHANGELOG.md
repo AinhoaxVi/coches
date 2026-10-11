@@ -1,5 +1,10 @@
 # Historial de cambios
 
+## 2.3.0 — 2026-10-11
+
+- Añadido el resumen de qué operaciones corresponden a cada hito de mantenimiento para el Hyundai i30 1.0 T-GDi europeo.
+- Afinadas las inspecciones y cambios del filtro de aire, refrigeración, frenos, combustible y cambio manual según el programa europeo del i30 PDe.
+- Los vehículos sin historial dejan de aparecer automáticamente como atrasados; muestran un hito de referencia para confirmar cuándo se hizo el último servicio.
 ## 2.2.0 — 2026-09-23
 
 - Añadido diagnóstico directo por código OBD en la pantalla Diagnosticar, sin pasar por el cuestionario de síntomas.

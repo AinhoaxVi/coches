@@ -1,4 +1,4 @@
-# MotorClaro 2.1
+# MotorClaro 2.3
 
 PWA en español para organizar vehículos, orientar averías con triaje de seguridad, interpretar códigos OBD y registrar mantenimiento. Funciona en GitHub Pages sin servidor y conserva los datos del usuario en su dispositivo.
 
@@ -13,7 +13,7 @@ Aplicación publicada: <https://ainhoaxvi.github.io/coches/>
 - Diagnóstico directo por uno o varios códigos OBD desde la pantalla Diagnosticar, sin completar el cuestionario de síntomas.
 - Diccionario integrado de 35 códigos OBD frecuentes y clasificación de coincidencia sin porcentajes engañosos.
 - Triaje explícito para frenos, temperatura, aceite, combustible y alta tensión.
-- Plan de mantenimiento por versión: intervalos exactos solo en perfiles documentados y lista compatible sin plazos inventados para el resto, con coste, taller, notas e historial.
+- Plan por versión con hitos agrupados por kilometraje, vencimientos por tiempo e historial de servicios; mantiene los intervalos sin confirmar como pendientes de VIN/manual.
 - Decodificación VIN tolerante con WMI local y consulta opcional a NHTSA vPIC; un VIN europeo válido sigue aceptándose aunque la fuente estadounidense no devuelva modelo o motor.
 - Validación de formato de matrícula española y acceso al informe oficial de la DGT.
 - Copias de seguridad JSON, importación, modo oscuro, accesibilidad de teclado e instalación PWA.
