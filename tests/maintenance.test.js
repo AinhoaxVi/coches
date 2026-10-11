@@ -5,11 +5,15 @@ require("../maintenance-data.js");
 const maintenance = globalThis.MOTORCLARO_MAINTENANCE;
 
 test("el Hyundai i30 1.0 T-GDi obtiene el plan europeo específico", () => {
-  const plan = maintenance.resolve({brand:"Hyundai",model:"i30",year:2022,engine:"1.0 T-GDi 120 CV",engineCode:"G3LE",power:120,fuel:"gasoline",transmission:"manual",tech:[]});
+  const plan = maintenance.resolve({brand:"Hyundai",model:"i30",year:2022,engine:"1.0 T-GDi 120 CV",engineCode:"G3LE",power:120,fuel:"gasoline",transmission:"manual",mileage:88000,tech:[]});
   assert.equal(plan.verified, true);
   assert.equal(plan.items.find(item => item.id === "oil").km, 15000);
   assert.equal(plan.items.find(item => item.id === "spark").km, 75000);
   assert.equal(plan.items.find(item => item.id === "coolant").firstKm, 210000);
+  assert.equal(plan.visits[0].km, 90000);
+  assert.ok(plan.visits[0].items.some(item => item.id === "oil"));
+  assert.ok(plan.visits[0].items.some(item => item.id === "drivebelt"));
+  assert.ok(plan.visits[2].items.some(item => item.id === "air"));
 });
 
 test("el uso exigente reduce solo el intervalo previsto", () => {
@@ -28,4 +32,13 @@ test("los planes sin ficha exacta no inventan kilómetros", () => {
   const saab = maintenance.resolve({brand:"Saab",model:"9-3",year:2008,fuel:"diesel",baseFuel:"diesel",tech:["commonRail","turbo"],transmission:"manual"});
   assert.ok(saab.items.some(item => item.id === "fuel"));
   assert.ok(!saab.items.some(item => item.id === "spark"));
+});
+
+test("el plan muestra los hitos mínimos desde el kilometraje actual", () => {
+  const vehicle = {brand:"Hyundai",model:"i30",year:2022,engine:"1.0 T-GDi 120 CV",engineCode:"G3LE",power:120,fuel:"gasoline",transmission:"manual",mileage:88000,tech:[]};
+  const plan = maintenance.resolve(vehicle);
+  assert.deepEqual(plan.visits.slice(0,3).map(visit => visit.km), [90000,105000,120000]);
+  assert.ok(plan.visits[0].items.some(item => item.id === "brakefluid"));
+  assert.ok(!plan.visits[1].items.some(item => item.id === "spark"));
+  assert.ok(plan.visits[2].items.some(item => item.id === "air"));
 });
